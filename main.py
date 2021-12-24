@@ -8,6 +8,7 @@ player_group = pygame.sprite.Group()
 size = width, height = 800, 800
 screen = pygame.display.set_mode(size)
 
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     # если файл не существует, то выходим
@@ -26,10 +27,12 @@ def load_image(name, colorkey=None):
 
 
 def create_level(level):
-    if level == 'level1':
-        level.add_line(['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'])
-        level.add_line(['R', 'R', 'R', 'R', 'R', 'R', 'R', 'R'])
-        level.add_line()
+    tiles = open(f'data/{level.name}.txt', mode='r', encoding='UTF-8').read().split()
+    for i in tiles:
+        level.board.append([j for j in i])
+        level.height += 1
+
+
 
 
 def terminate():
@@ -39,7 +42,8 @@ def terminate():
 
 class Level:
     # создание поля
-    def __init__(self, width):
+    def __init__(self, name, width):
+        self.name = name
         self.width = width
         self.height = 0
         self.board = []
@@ -66,7 +70,7 @@ class Level:
                                       self.cell_size - 2, self.cell_size - 2))
 
     def add_line(self, line):
-        self.board.insert(-1, line)
+        self.board.append(line)
         self.height += 1
 
 # класс Персонажа
@@ -76,18 +80,16 @@ class Player(pygame.sprite.Sprite):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.image = player_image
-        self.rect = self.image.get_rect().move(60 * pos_x + 15, 60 * pos_y + 5)
+        self.rect = self.image.get_rect().move(100 + 60 * pos_x + 15, 100 + 60 * pos_y + 5)
 
     def move(self, direction):
         pass
 
 
 def game():
-
-
-    level = Level(8)
-    create_level('level1')
-    player = Player(0, 2)
+    level = Level('level1', 8)
+    create_level(level)
+    player = Player(5, 2)
     running = True
     while True:
         for event in pygame.event.get():
@@ -102,7 +104,9 @@ def game():
                     player.move('left')
         screen.fill((0, 0, 0))
         level.render(screen)
+        all_sprites.draw(screen)
         pygame.display.flip()
+
 
 tile_images = {'B': pygame.color.Color('Black'),
                'R': pygame.color.Color('Red'),
