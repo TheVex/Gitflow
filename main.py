@@ -9,6 +9,7 @@ size = width, height = 800, 800
 screen = pygame.display.set_mode(size)
 
 
+# Функция для загрузки картинок
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     # если файл не существует, то выходим
@@ -26,6 +27,7 @@ def load_image(name, colorkey=None):
     return image
 
 
+# Лезет в текстовый файл и добавляет значение каждой буквы в матрицу игрового поля
 def create_level(level):
     tiles = open(f'data/{level.name}.txt', mode='r', encoding='UTF-8').read().split()
     for i in tiles:
@@ -34,29 +36,30 @@ def create_level(level):
 
 
 
-
+# Завершает работу
 def terminate():
     pygame.quit()
     sys.exit()
 
 
+# Класс игрового поля
 class Level:
     # создание поля
-    def __init__(self, name, width):
+    def __init__(self, name):
         self.name = name
-        self.width = width
+        self.width = 12
         self.height = 0
         self.board = []
         # значения по умолчанию
-        self.left = 100
-        self.top = 100
         self.cell_size = 60
 
+
+    # Прорисовка поля
     def render(self, screen):
         for j in range(self.height):
             for i in range(self.width):
-                pygame.draw.rect(screen, 'white', (self.left + i * self.cell_size,
-                                                   self.top + j * self.cell_size,
+                pygame.draw.rect(screen, 'white', (i * self.cell_size,
+                                                   j * self.cell_size,
                                                    self.cell_size, self.cell_size), 1)
                 if self.board[j][i] == 'B':
                     color = pygame.Color('black')
@@ -65,13 +68,10 @@ class Level:
                 else:
                     color = pygame.Color('white')
 
-                screen.fill(color, ((self.left + i * self.cell_size) + 1,
-                                    (self.top + j * self.cell_size) + 1,
+                screen.fill(color, ((i * self.cell_size) + 1,
+                                    (j * self.cell_size) + 1,
                                       self.cell_size - 2, self.cell_size - 2))
 
-    def add_line(self, line):
-        self.board.append(line)
-        self.height += 1
 
 # класс Персонажа
 class Player(pygame.sprite.Sprite):
@@ -80,14 +80,25 @@ class Player(pygame.sprite.Sprite):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.image = player_image
-        self.rect = self.image.get_rect().move(100 + 60 * pos_x + 15, 100 + 60 * pos_y + 5)
+        self.update()
 
     def move(self, direction):
-        pass
+        if direction == 'left':
+            self.pos_x -= 1
+        elif direction == 'up':
+            self.pos_y -= 1
+        elif direction == 'right':
+            self.pos_x += 1
+        elif direction == 'down':
+            self.pos_y += 1
+        self.update()
+
+    def update(self):
+        self.rect = self.image.get_rect().move(60 * self.pos_x + 15, 60 * self.pos_y + 5)
 
 
 def game():
-    level = Level('level1', 8)
+    level = Level('level1')
     create_level(level)
     player = Player(5, 2)
     running = True
@@ -101,7 +112,9 @@ def game():
                 elif event.key == pygame.K_UP:
                     player.move('up')
                 elif event.key == pygame.K_RIGHT:
-                    player.move('left')
+                    player.move('right')
+                elif event.key == pygame.K_DOWN:
+                    player.move('down')
         screen.fill((0, 0, 0))
         level.render(screen)
         all_sprites.draw(screen)
