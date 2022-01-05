@@ -10,7 +10,7 @@ asterisks = pygame.sprite.Group()
 clock = pygame.time.Clock()
 size = width, height = 600, 600
 screen = pygame.display.set_mode(size)
-GRAVITY = 1
+GRAVITY = 1.5
 
 music_number = 0
 music_list = ['музыка1.mp3', 'музыка2.mp3', 'музыка3.mp3', 'музыка4.mp3', 'музыка5.mp3',
@@ -94,6 +94,11 @@ class Player(pygame.sprite.Sprite): # класс Персонажа
                 self.pos_y += 1
         self.update()
 
+    def finish_check(self):
+        if self.pos_x == finish_point_x and self.pos_y == finish_point_y:
+            return True
+        return False
+
     def update(self):
         self.rect = self.image.get_rect().move(60 * self.pos_x + 15, 60 * self.pos_y + 5)
 
@@ -137,8 +142,8 @@ if __name__ == '__main__':
     level = Level('level1')
     create_level(level)
     player = Player(5, 2)  ##### надо сделать так чтобы менялось в зависимости от уровня
-    finish_point_x = 7  ##### надо сделать так чтобы менялось в зависимости от уровня
-    finish_point_y = 8  ##### надо сделать так чтобы менялось в зависимости от уровня
+    finish_point_x = 0  ##### надо сделать так чтобы менялось в зависимости от уровня
+    finish_point_y = 0  ##### надо сделать так чтобы менялось в зависимости от уровня
 
     screen_rect = (0, 0, width, height)
 
@@ -155,6 +160,7 @@ if __name__ == '__main__':
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     player.move('left')
+
                 elif event.key == pygame.K_UP:
                     player.move('up')
                 elif event.key == pygame.K_RIGHT:
@@ -191,6 +197,9 @@ if __name__ == '__main__':
                     pygame.mixer.music.load(fullname)
                     pygame.mixer.music.play(-1)
                     pygame.mixer.music.set_volume(vol)
+        finish_flag = player.finish_check()
+        if finish_flag:
+            create_particles((random.randint(-50, 650), random.randint(-100, 100)))
         screen.fill((0, 0, 0))
         level.render(screen)
         player_group.draw(screen)
