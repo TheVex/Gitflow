@@ -10,9 +10,12 @@ asterisks = pygame.sprite.Group()
 clock = pygame.time.Clock()
 size = width, height = 600, 600
 screen = pygame.display.set_mode(size)
-
 GRAVITY = 1
-fullname = os.path.join('data', "музыка1.mp3")
+
+music_number = 0
+music_list = ['музыка1.mp3', 'музыка2.mp3', 'музыка3.mp3', 'музыка4.mp3', 'музыка5.mp3',
+              'музыка6.mp3','музыка7.mp3', 'музыка8.mp3', 'музыка9.mp3', 'музыка10.mp3']
+fullname = os.path.join('data', music_list[music_number])
 pygame.mixer.music.load(fullname)
 
 def load_image(name, colorkey=None): # Функция для загрузки картинок
@@ -171,6 +174,22 @@ if __name__ == '__main__':
                     pygame.mixer.music.set_volume(vol)
                 elif event.key == pygame.K_d:
                     vol += 0.1
+                    pygame.mixer.music.set_volume(vol)
+                elif event.key == pygame.K_w: # переключение музыки
+                    music_number += 1
+                    if music_number == 10:
+                        music_number = 0
+                    fullname = os.path.join('data', music_list[music_number])
+                    pygame.mixer.music.load(fullname)
+                    pygame.mixer.music.play(-1)
+                    pygame.mixer.music.set_volume(vol)
+                elif event.key == pygame.K_s:
+                    music_number -= 1
+                    if music_number == -1:
+                        music_number = 9
+                    fullname = os.path.join('data', music_list[music_number])
+                    pygame.mixer.music.load(fullname)
+                    pygame.mixer.music.play(-1)
                     pygame.mixer.music.set_volume(vol)
         screen.fill((0, 0, 0))
         level.render(screen)
