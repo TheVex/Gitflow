@@ -12,9 +12,11 @@ size = width, height = 600, 600
 screen = pygame.display.set_mode(size)
 GRAVITY = 1.5
 
-tile_images = {'B': pygame.color.Color('Black'),
-               'R': pygame.color.Color('Red'),
-               'W': pygame.color.Color('White')}
+tile_images = {'B': pygame.color.Color('Black'), # Ничего (Black)
+               'R': pygame.color.Color('Red'), # Смерть (Red)
+               'W': pygame.color.Color('Blue'), # Вода (Water)
+               'G': pygame.color.Color('Green'), # Победа (Green)
+               'S': pygame.color.Color('Brown'),} # Стена (Stena ('Wall' начинается как 'Water'))
 
 music_number = 1
 music_list = ['музыка1.mp3', 'музыка2.mp3', 'музыка3.mp3', 'музыка4.mp3', 'музыка5.mp3',
@@ -60,54 +62,54 @@ class Level:  # Класс игрового поля
         self.height = 0
         self.board = []
 
-        self.cell_size = 75  # значения по умолчанию
+        self.cell_size = 50  # значения по умолчанию
 
     def render(self, screen):  # Прорисовка поля
-        for j in range(self.height):
-            for i in range(self.width):
-                pygame.draw.rect(screen, 'white', (i * self.cell_size,
-                                                   j * self.cell_size,
+        for i in range(self.height):
+            for j in range(self.width):
+                pygame.draw.rect(screen, 'white', (j * self.cell_size,
+                                                   i * self.cell_size,
                                                    self.cell_size, self.cell_size), 1)
-                if self.board[j][i] == 'B':
-                    color = pygame.Color('black')
-                elif self.board[j][i] == 'R':
-                    color = pygame.Color('brown')
-                else:
-                    color = pygame.Color('white')
 
-                screen.fill(color, ((i * self.cell_size) + 1,
-                                    (j * self.cell_size) + 1,
+                screen.fill(tile_images[self.board[i][j]], ((j * self.cell_size) + 1,
+                                    (i * self.cell_size) + 1,
                                     self.cell_size - 2, self.cell_size - 2))
 
 
 class Player(pygame.sprite.Sprite):  # класс Персонажа
-    def __init__(self, pos_x, pos_y, cell_size):
+    def __init__(self, pos_x, pos_y, level):
         super(Player, self).__init__(player_group, all_sprites)
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.image = player_image
-        self.cell_size = cell_size
+        self.cell_size = level.cell_size
+        self.board = level.board
         self.update()
 
     def move(self, direction):
-        if direction == 'left':
+        if direction == 'left' and self.board[self.pos_y][self.pos_x - 1] != 'S':
             if self.pos_x != 0:
                 self.pos_x -= 1
-        elif direction == 'up':
+        elif direction == 'up' and self.board[self.pos_y - 1][self.pos_x] != 'S':
             if self.pos_y != 0:
                 self.pos_y -= 1
-        elif direction == 'right':
+        elif direction == 'right' and self.board[self.pos_y][self.pos_x + 1] != 'S':
             if self.pos_x != number_of_cells:
                 self.pos_x += 1
-        elif direction == 'down':
+        elif direction == 'down' and self.board[self.pos_y + 1][self.pos_x] != 'S':
             if self.pos_y != number_of_cells:
                 self.pos_y += 1
         self.update()
 
-    def finish_check(self):
-        if self.pos_x == finish_point_x and self.pos_y == finish_point_y:
-            return True
-        return False
+    def on_tile(self, level):
+        if level.board[self.pos_y][self.pos_x] == 'G':
+            create_particles((random.randint(-50, 650), random.randint(-100, 100)))
+        elif level.board[self.pos_y][self.pos_x] == 'W':
+            print('Game over! (Пока интерфейс не написан)')
+            terminate()
+        elif level.board[self.pos_y][self.pos_x] == 'R':
+            print('Game over! (Пока интерфейс не написан)')
+            terminate()
 
     def update(self):
         self.rect = self.image.get_rect().move(self.cell_size * self.pos_x + self.cell_size * 0.35,
@@ -146,10 +148,10 @@ def create_particles(position):
 player_image = load_image('mario.png')
 
 if __name__ == '__main__':
-    number_of_cells = 9
+    number_of_cells = 12
     level = Level('level1')
     create_level(level)
-    player = Player(5, 2, level.cell_size)   # надо сделать так чтобы менялось в зависимости от уровня
+    player = Player(6, 10, level)   # надо сделать так чтобы менялось в зависимости от уровня
     finish_point_x = 0   # надо сделать так чтобы менялось в зависимости от уровня
     finish_point_y = 0   # надо сделать так чтобы менялось в зависимости от уровня
 
@@ -168,7 +170,6 @@ if __name__ == '__main__':
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     player.move('left')
-
                 elif event.key == pygame.K_UP:
                     player.move('up')
                 elif event.key == pygame.K_RIGHT:
@@ -205,9 +206,7 @@ if __name__ == '__main__':
                     pygame.mixer.music.load(fullname)
                     pygame.mixer.music.play(-1)
                     pygame.mixer.music.set_volume(vol)
-        finish_flag = player.finish_check()
-        if finish_flag:
-            create_particles((random.randint(-50, 650), random.randint(-100, 100)))
+        player.on_tile(level)
         screen.fill((0, 0, 0))
         level.render(screen)
         player_group.draw(screen)
