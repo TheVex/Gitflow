@@ -151,9 +151,7 @@ if __name__ == '__main__':
     number_of_cells = 12
     level = Level('level1')
     create_level(level)
-    player = Player(6, 10, level)   # надо сделать так чтобы менялось в зависимости от уровня
-    finish_point_x = 0   # надо сделать так чтобы менялось в зависимости от уровня
-    finish_point_y = 0   # надо сделать так чтобы менялось в зависимости от уровня
+    player = Player(6, 10, level)
 
     screen_rect = (0, 0, width, height)
 
