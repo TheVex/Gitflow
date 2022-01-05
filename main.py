@@ -12,19 +12,25 @@ size = width, height = 600, 600
 screen = pygame.display.set_mode(size)
 GRAVITY = 1.5
 
+tile_images = {'B': pygame.color.Color('Black'),
+               'R': pygame.color.Color('Red'),
+               'W': pygame.color.Color('White')}
+
 music_number = 0
 music_list = ['музыка1.mp3', 'музыка2.mp3', 'музыка3.mp3', 'музыка4.mp3', 'музыка5.mp3',
-              'музыка6.mp3','музыка7.mp3', 'музыка8.mp3', 'музыка9.mp3', 'музыка10.mp3']
+              'музыка6.mp3', 'музыка7.mp3', 'музыка8.mp3', 'музыка9.mp3', 'музыка10.mp3']
+
 fullname = os.path.join('data', music_list[music_number])
 pygame.mixer.music.load(fullname)
 
-def load_image(name, colorkey=None): # Функция для загрузки картинок
-    fullname = os.path.join('data', name)
+
+def load_image(name, colorkey=None):  # Функция для загрузки картинок
+    fn = os.path.join('data', name)
     # если файл не существует, то выходим
-    if not os.path.isfile(fullname):
-        print(f"Файл с изображением '{fullname}' не найден")
+    if not os.path.isfile(fn):
+        print(f"Файл с изображением '{fn}' не найден")
         sys.exit()
-    image = pygame.image.load(fullname)
+    image = pygame.image.load(fn)
     if colorkey is not None:
         image = image.convert()
         if colorkey == -1:
@@ -34,27 +40,29 @@ def load_image(name, colorkey=None): # Функция для загрузки к
         image = image.convert_alpha()
     return image
 
-def create_level(level): # Лезет в текстовый файл и добавляет значение каждой буквы в матрицу игрового поля
+
+def create_level(level):  # Лезет в текстовый файл и добавляет значение каждой буквы в матрицу игрового поля
     tiles = open(f'data/{level.name}.txt', mode='r', encoding='UTF-8').read().split()
     for i in tiles:
         level.board.append([j for j in i])
         level.height += 1
 
 
-def terminate(): # Завершает работу
+def terminate():  # Завершает работу
     pygame.quit()
     sys.exit()
 
-class Level: # Класс игрового поля
-    def __init__(self, name): # создание поля
+
+class Level:  # Класс игрового поля
+    def __init__(self, name):  # создание поля
         self.name = name
         self.width = number_of_cells
         self.height = 0
         self.board = []
 
-        self.cell_size = 75 # значения по умолчанию
+        self.cell_size = 75  # значения по умолчанию
 
-    def render(self, screen): # Прорисовка поля
+    def render(self, screen):  # Прорисовка поля
         for j in range(self.height):
             for i in range(self.width):
                 pygame.draw.rect(screen, 'white', (i * self.cell_size,
@@ -71,7 +79,8 @@ class Level: # Класс игрового поля
                                     (j * self.cell_size) + 1,
                                     self.cell_size - 2, self.cell_size - 2))
 
-class Player(pygame.sprite.Sprite): # класс Персонажа
+
+class Player(pygame.sprite.Sprite):  # класс Персонажа
     def __init__(self, pos_x, pos_y):
         super(Player, self).__init__(player_group, all_sprites)
         self.pos_x = pos_x
@@ -104,7 +113,7 @@ class Player(pygame.sprite.Sprite): # класс Персонажа
 
 
 class Particle(pygame.sprite.Sprite):
-    fire = [load_image("star.png")] # сгенерируем частицы разного размера
+    fire = [load_image("star.png")]  # сгенерируем частицы разного размера
     for scale in (5, 10, 20):
         fire.append(pygame.transform.scale(fire[0], (scale, scale)))
 
@@ -113,27 +122,24 @@ class Particle(pygame.sprite.Sprite):
         self.image = random.choice(self.fire)
         self.rect = self.image.get_rect()
 
-        self.velocity = [dx, dy] # у каждой частицы своя скорость — это вектор
-        self.rect.x, self.rect.y = pos # и свои координаты
-        self.gravity = GRAVITY # гравитация будет одинаковой (значение константы)
+        self.velocity = [dx, dy]  # у каждой частицы своя скорость — это вектор
+        self.rect.x, self.rect.y = pos  # и свои координаты
+        self.gravity = GRAVITY  # гравитация будет одинаковой (значение константы)
 
     def update(self):
-        self.velocity[1] += self.gravity # применяем гравитационный эффект: # движение с ускорением под действием гравитации
-        self.rect.x += self.velocity[0] # перемещаем частицу
+        self.velocity[1] += self.gravity  # применяем гравитац. эффект: движение с ускорением под действием гравитации
+        self.rect.x += self.velocity[0]  # перемещаем частицу
         self.rect.y += self.velocity[1]
-        if not self.rect.colliderect(screen_rect): # убиваем, если частица ушла за экран
+        if not self.rect.colliderect(screen_rect):  # убиваем, если частица ушла за экран
             self.kill()
 
+
 def create_particles(position):
-    particle_count = 20 # количество создаваемых частиц
-    numbers = range(-5, 6) # возможные скорости
+    particle_count = 20  # количество создаваемых частиц
+    numbers = range(-5, 6)  # возможные скорости
     for _ in range(particle_count):
         Particle(position, random.choice(numbers), random.choice(numbers))
 
-
-tile_images = {'B': pygame.color.Color('Black'),
-               'R': pygame.color.Color('Red'),
-               'W': pygame.color.Color('White')}
 
 player_image = load_image('mario.png')
 
@@ -141,9 +147,9 @@ if __name__ == '__main__':
     number_of_cells = 9
     level = Level('level1')
     create_level(level)
-    player = Player(5, 2)  ##### надо сделать так чтобы менялось в зависимости от уровня
-    finish_point_x = 0  ##### надо сделать так чтобы менялось в зависимости от уровня
-    finish_point_y = 0  ##### надо сделать так чтобы менялось в зависимости от уровня
+    player = Player(5, 2)   # надо сделать так чтобы менялось в зависимости от уровня
+    finish_point_x = 0   # надо сделать так чтобы менялось в зависимости от уровня
+    finish_point_y = 0   # надо сделать так чтобы менялось в зависимости от уровня
 
     screen_rect = (0, 0, width, height)
 
@@ -155,7 +161,7 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            elif event.type == pygame.MOUSEBUTTONDOWN: # создаём частицы по щелчку мыши
+            elif event.type == pygame.MOUSEBUTTONDOWN:  # создаём частицы по щелчку мыши
                 create_particles(pygame.mouse.get_pos())
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
@@ -181,7 +187,7 @@ if __name__ == '__main__':
                 elif event.key == pygame.K_d:
                     vol += 0.1
                     pygame.mixer.music.set_volume(vol)
-                elif event.key == pygame.K_w: # переключение музыки
+                elif event.key == pygame.K_w:  # переключение музыки
                     music_number += 1
                     if music_number == 10:
                         music_number = 0
@@ -203,7 +209,6 @@ if __name__ == '__main__':
         screen.fill((0, 0, 0))
         level.render(screen)
         player_group.draw(screen)
-
 
         asterisks.update()
         asterisks.draw(screen)
