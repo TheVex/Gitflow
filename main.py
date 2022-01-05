@@ -16,7 +16,7 @@ tile_images = {'B': pygame.color.Color('Black'),
                'R': pygame.color.Color('Red'),
                'W': pygame.color.Color('White')}
 
-music_number = 0
+music_number = 1
 music_list = ['музыка1.mp3', 'музыка2.mp3', 'музыка3.mp3', 'музыка4.mp3', 'музыка5.mp3',
               'музыка6.mp3', 'музыка7.mp3', 'музыка8.mp3', 'музыка9.mp3', 'музыка10.mp3']
 
@@ -81,11 +81,12 @@ class Level:  # Класс игрового поля
 
 
 class Player(pygame.sprite.Sprite):  # класс Персонажа
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x, pos_y, cell_size):
         super(Player, self).__init__(player_group, all_sprites)
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.image = player_image
+        self.cell_size = cell_size
         self.update()
 
     def move(self, direction):
@@ -109,7 +110,8 @@ class Player(pygame.sprite.Sprite):  # класс Персонажа
         return False
 
     def update(self):
-        self.rect = self.image.get_rect().move(60 * self.pos_x + 15, 60 * self.pos_y + 5)
+        self.rect = self.image.get_rect().move(self.cell_size * self.pos_x + self.cell_size * 0.35,
+                                               self.cell_size * self.pos_y + self.cell_size * 0.2)
 
 
 class Particle(pygame.sprite.Sprite):
@@ -147,7 +149,7 @@ if __name__ == '__main__':
     number_of_cells = 9
     level = Level('level1')
     create_level(level)
-    player = Player(5, 2)   # надо сделать так чтобы менялось в зависимости от уровня
+    player = Player(5, 2, level.cell_size)   # надо сделать так чтобы менялось в зависимости от уровня
     finish_point_x = 0   # надо сделать так чтобы менялось в зависимости от уровня
     finish_point_y = 0   # надо сделать так чтобы менялось в зависимости от уровня
 
