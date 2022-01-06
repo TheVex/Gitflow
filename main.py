@@ -116,6 +116,7 @@ class Level:  # Класс игрового поля
         self.tile_map = []
 
         self.enemy_list = []
+
         self.collectible_list = []
 
         self.cell_size = 50  # значения по умолчанию
@@ -139,8 +140,6 @@ class Level:  # Класс игрового поля
 
 
 
-
-
     def is_free(self, y, x, only_wall=True):
         if only_wall:
             if self.tile_map[x][y] != 'S':
@@ -152,9 +151,9 @@ class Level:  # Класс игрового поля
 
 
 
-class Player(pygame.sprite.Sprite):  # класс Персонажа
+class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
     def __init__(self, pos_x, pos_y, level):
-        super(Player, self).__init__(enemy_group, all_sprites)
+        super(Player, self).__init__(player_group, all_sprites)
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.image = player_image
@@ -177,19 +176,21 @@ class Player(pygame.sprite.Sprite):  # класс Персонажа
         self.update()
 
     def on_tile(self):
-        if self.level.tile_map[self.pos_y][self.pos_x] == 'G':
+        if self.level.tile_map[self.pos_x][self.pos_y] == 'G':
             create_particles((random.randint(-50, 650), random.randint(-100, 100)))
-        elif self.level.tile_map[self.pos_y][self.pos_x] == 'W':
-            pass
-        elif self.level.tile_map[self.pos_y][self.pos_x] == 'R':
-            pass
+        elif self.level.tile_map[self.pos_x][self.pos_y] == 'W':
+            print('The End')
+            terminate()
+        elif self.level.tile_map[self.pos_x][self.pos_y] == 'R':
+            print('The End')
+            terminate()
 
     def update(self):
         self.rect = self.image.get_rect().move(self.level.cell_size * self.pos_y + self.level.cell_size * 0.35,
                                                self.level.cell_size * self.pos_x + self.level.cell_size * 0.2)
 
 
-class Enemy(pygame.sprite.Sprite, Level):  # Класс противника
+class Enemy(pygame.sprite.Sprite, Level):  # КЛАСС ПРОТИВНИКА
     def __init__(self, pos_x, pos_y, level):
         super(Enemy, self).__init__(enemy_group, all_sprites)
         self.pos_x = pos_x
@@ -197,19 +198,6 @@ class Enemy(pygame.sprite.Sprite, Level):  # Класс противника
         self.image = enemy_image
         self.level = level
         self.update()
-
-    def move(self, direction):
-        self.update()
-
-    def on_tile(self, level):
-        if level.board[self.pos_y][self.pos_x] == 'G':
-            create_particles((random.randint(-50, 650), random.randint(-100, 100)))
-        elif level.board[self.pos_y][self.pos_x] == 'W':
-            print('Game over! (Пока интерфейс не написан)')
-            terminate()
-        elif level.board[self.pos_y][self.pos_x] == 'R':
-            print('Game over! (Пока интерфейс не написан)')
-            terminate()
 
     def update(self):
         self.rect = self.image.get_rect().move(self.level.cell_size * self.pos_y + self.level.cell_size * 0.35,
@@ -336,7 +324,6 @@ def start_game():
         level.player.on_tile()
         screen.fill((0, 0, 0))
         level.render(screen)
-        player_group.draw(screen)
         all_sprites.draw(screen)
 
         asterisks.update()
