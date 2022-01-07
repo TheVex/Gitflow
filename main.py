@@ -294,7 +294,8 @@ def start_level_winter():
 
 
 def start_level_random():
-    start_game(random.choice['level_Winter', 'level_Jungle', 'level_Desert'])
+    random_level = ['level_Winter', 'level_Jungle', 'level_Desert']
+    start_game(random.choice(random_level))
 
 
 def start_game(name_level):
