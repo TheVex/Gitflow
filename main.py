@@ -12,7 +12,7 @@ collectible_group = pygame.sprite.Group()
 asterisks = pygame.sprite.Group()
 
 clock = pygame.time.Clock()
-size = width, height = 600, 600
+size = width, height = 600, 660
 screen = pygame.display.set_mode(size)
 GRAVITY = 1.5
 
@@ -56,7 +56,7 @@ def create_level(level):  # Лезет в текстовый файл и доб�
         level.height += 1
 
     objects = open(f'data/{level.name}/level_objectmap.txt', mode='r', encoding='UTF-8').read().split()
-    for i in range(len(objects)): # Привязывает объекты с другого файла к уровню
+    for i in range(len(objects)):  # Привязывает объекты с другого файла к уровню
         for j in range(len(objects[i])):
             if objects[i][j] == '.':
                 continue
@@ -66,7 +66,6 @@ def create_level(level):  # Лезет в текстовый файл и доб�
                 level.enemy_list.append(Enemy(i, j, level))
             elif objects[i][j] == 'P':
                 level.player = Player(i, j, level)
-
 
 
 def create_particles(position):
@@ -82,10 +81,17 @@ def terminate():  # Завершает работу
 
 
 def show_menu():
-    fullname = os.path.join('data', 'Menu2.jpg')
+    global menu_bckgr
+    fullname = os.path.join('Общие картинки', 'Фон1.jpg')
+    fullname = os.path.join('Картинки', fullname)
+    fullname = os.path.join('data', fullname)
     menu_bckgr = pygame.image.load(fullname)
-    start_button = Button(288, 70, (241, 219, 255), (255, 255, 255))
-    quit_button = Button(120, 70, (255, 255, 255), (255, 255, 255))
+    start_desert_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
+    start_jungle_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
+    start_winter_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
+    start_random_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
+    rules_of_the_game_button = Button(345, 57, (190, 233, 221), (180, 255, 235))
+    quit_button = Button(100, 60, (190, 233, 221), (180, 255, 235))
 
     show = True
     while show:
@@ -94,8 +100,25 @@ def show_menu():
                 terminate()
 
         screen.blit(menu_bckgr, (0, 0))
-        start_button.draw(270, 200, 'Start game', start_game, 50)
-        quit_button.draw(358, 300, 'Quit', terminate, 50)
+        pygame.draw.rect(screen, (180, 255, 235), (150, 174, 300, 2), 0)
+
+        font = pygame.font.Font(None, 75)
+        text = font.render('Start game', True, (16, 17, 18))
+        text_rect = text.get_rect(center=(300, 155))
+        screen.blit(text, text_rect)
+
+        start_desert_button.draw(200, 200, 'level "Desert"', start_game, 30)
+        pygame.draw.rect(screen, (180, 255, 235), (199, 199, 202, 52), 3)
+        start_jungle_button.draw(200, 270, 'level "Jungle"', start_game, 30)
+        pygame.draw.rect(screen, (180, 255, 235), (199, 269, 202, 52), 3)
+        start_winter_button.draw(200, 340, 'level "Winter"', start_game, 30)
+        pygame.draw.rect(screen, (180, 255, 235), (199, 339, 202, 52), 3)
+        start_random_button.draw(200, 410, 'random level', start_game, 30)
+        pygame.draw.rect(screen, (180, 255, 235), (199, 409, 202, 52), 3)
+        rules_of_the_game_button.draw(140, 500, 'Rules of the game', rule_window, 38)
+        pygame.draw.rect(screen, (180, 255, 235), (139, 499, 347, 59), 3)
+        quit_button.draw(250, 570, 'Quit', terminate, 40)
+        pygame.draw.rect(screen, (180, 255, 235), (249, 569, 102, 62), 3)
         pygame.display.update()
         clock.tick(60)
 
@@ -129,16 +152,14 @@ class Level:  # Класс игрового поля
                                                    self.cell_size, self.cell_size), 1)
 
                 screen.fill(tile_images[self.tile_map[i][j]], ((j * self.cell_size) + 1,
-                                                            (i * self.cell_size) + 1,
-                                                            self.cell_size - 2, self.cell_size - 2))
+                                                               (i * self.cell_size) + 1,
+                                                               self.cell_size - 2, self.cell_size - 2))
 
                 for m in self.enemy_list:
                     m.update()
 
                 for n in self.collectible_list:
                     n.update()
-
-
 
     def is_free(self, y, x, only_wall=True):
         if only_wall:
@@ -148,7 +169,6 @@ class Level:  # Класс игрового поля
         if self.tile_map[x][y] == 'B':
             return True
         return False
-
 
 
 class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
@@ -264,6 +284,18 @@ class Button:
         print_text(message=message, x=x + 10, y=y + 10, font_size=font_size)
 
 
+def rule_window():
+    back_button = Button(75, 60, (190, 233, 221), (180, 255, 235))
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+        screen.blit(menu_bckgr, (0, 0))
+        back_button.draw(20, 580, '<--', show_menu, 40)
+        pygame.draw.rect(screen, (180, 255, 235), (19, 579, 77, 62), 3)
+        pygame.display.flip()
+
+
 def start_game():
     global number_of_cells, screen_rect
     number_of_cells = 12
@@ -328,7 +360,7 @@ def start_game():
 
         asterisks.update()
         asterisks.draw(screen)
-        pygame.display.flip()
+
         clock.tick(50)
 
         pygame.display.flip()
