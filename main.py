@@ -4,28 +4,23 @@ import os
 import random
 
 pygame.init()
-
 all_sprites = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 collectible_group = pygame.sprite.Group()
 asterisks = pygame.sprite.Group()
-
 clock = pygame.time.Clock()
 size = width, height = 600, 660
 screen = pygame.display.set_mode(size)
 GRAVITY = 1.5
-
 tile_images = {'B': pygame.color.Color('Black'),  # Ничего (Black)
                'R': pygame.color.Color('Red'),  # Смерть (Red)
                'W': pygame.color.Color('Blue'),  # Вода (Water)
                'G': pygame.color.Color('Green'),  # Победа (Green)
                'S': pygame.color.Color('Brown'), }  # Стена (Stena ('Wall' начинается как 'Water'))
-
 music_number = 1
 music_list = ['музыка1.mp3', 'музыка2.mp3', 'музыка3.mp3', 'музыка4.mp3', 'музыка5.mp3',
               'музыка6.mp3', 'музыка7.mp3', 'музыка8.mp3', 'музыка9.mp3', 'музыка10.mp3']
-
 fullname1 = os.path.join('data', music_list[music_number])
 pygame.mixer.music.load(fullname1)
 fullname2 = os.path.join('data', 'button.wav')
@@ -92,13 +87,11 @@ def show_menu():
     start_random_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
     rules_of_the_game_button = Button(345, 57, (190, 233, 221), (180, 255, 235))
     quit_button = Button(100, 60, (190, 233, 221), (180, 255, 235))
-
     show = True
     while show:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-
         screen.blit(menu_bckgr, (0, 0))
         pygame.draw.rect(screen, (180, 255, 235), (150, 174, 300, 2), 0)
 
@@ -107,13 +100,13 @@ def show_menu():
         text_rect = text.get_rect(center=(300, 155))
         screen.blit(text, text_rect)
 
-        start_desert_button.draw(200, 200, 'level "Desert"', start_game, 30)
+        start_desert_button.draw(200, 200, 'level "Desert"', start_level_desert, 30)
         pygame.draw.rect(screen, (180, 255, 235), (199, 199, 202, 52), 3)
-        start_jungle_button.draw(200, 270, 'level "Jungle"', start_game, 30)
+        start_jungle_button.draw(200, 270, 'level "Jungle"', start_level_jungle, 30)
         pygame.draw.rect(screen, (180, 255, 235), (199, 269, 202, 52), 3)
-        start_winter_button.draw(200, 340, 'level "Winter"', start_game, 30)
+        start_winter_button.draw(200, 340, 'level "Winter"', start_level_winter, 30)
         pygame.draw.rect(screen, (180, 255, 235), (199, 339, 202, 52), 3)
-        start_random_button.draw(200, 410, 'random level', start_game, 30)
+        start_random_button.draw(200, 410, 'random level', start_level_random, 30)
         pygame.draw.rect(screen, (180, 255, 235), (199, 409, 202, 52), 3)
         rules_of_the_game_button.draw(140, 500, 'Rules of the game', rule_window, 38)
         pygame.draw.rect(screen, (180, 255, 235), (139, 499, 347, 59), 3)
@@ -135,13 +128,9 @@ class Level:  # Класс игрового поля
         self.name = name
         self.width = number_of_cells
         self.height = 0
-
         self.tile_map = []
-
         self.enemy_list = []
-
         self.collectible_list = []
-
         self.cell_size = 50  # значения по умолчанию
 
     def render(self, screen):  # Прорисовка поля
@@ -150,14 +139,11 @@ class Level:  # Класс игрового поля
                 pygame.draw.rect(screen, 'white', (j * self.cell_size,
                                                    i * self.cell_size,
                                                    self.cell_size, self.cell_size), 1)
-
                 screen.fill(tile_images[self.tile_map[i][j]], ((j * self.cell_size) + 1,
                                                                (i * self.cell_size) + 1,
                                                                self.cell_size - 2, self.cell_size - 2))
-
                 for m in self.enemy_list:
                     m.update()
-
                 for n in self.collectible_list:
                     n.update()
 
@@ -247,7 +233,6 @@ class Particle(pygame.sprite.Sprite):
         super().__init__(asterisks)
         self.image = random.choice(self.fire)
         self.rect = self.image.get_rect()
-
         self.velocity = [dx, dy]  # у каждой частицы своя скорость — это вектор
         self.rect.x, self.rect.y = pos  # и свои координаты
         self.gravity = GRAVITY  # гравитация будет одинаковой (значение константы)
@@ -296,18 +281,34 @@ def rule_window():
         pygame.display.flip()
 
 
-def start_game():
+def start_level_desert():
+    start_game('level_Desert')
+
+
+def start_level_jungle():
+    start_game('level_Jungle')
+
+
+def start_level_winter():
+    start_game('level_Winter')
+
+
+def start_level_random():
+    start_game(random.choice['level_Winter', 'level_Jungle', 'level_Desert'])
+
+
+def start_game(name_level):
     global number_of_cells, screen_rect
     number_of_cells = 12
-    level = Level('level1')
+    level = Level(name_level)
     create_level(level)
-
     screen_rect = (0, 0, width, height)
-
     pygame.mixer.music.play(-1)
     flPause = False
     vol = 0.5
     pygame.mixer.music.set_volume(vol)
+
+    back_button = Button(75, 50, (190, 233, 221), (180, 255, 235))
 
     while True:
         for event in pygame.event.get():
@@ -354,12 +355,15 @@ def start_game():
                     pygame.mixer.music.set_volume(vol)
 
         level.player.on_tile()
-        screen.fill((0, 0, 0))
+        screen.blit(menu_bckgr, (0, 0))
         level.render(screen)
         all_sprites.draw(screen)
 
         asterisks.update()
         asterisks.draw(screen)
+
+        back_button.draw(10, 605, '<--', show_menu, 40)
+        pygame.draw.rect(screen, (180, 255, 235), (9, 604, 77, 52), 3)
 
         clock.tick(50)
 
