@@ -4,11 +4,7 @@ import os
 import random
 
 pygame.init()
-all_sprites = pygame.sprite.Group()
-player_group = pygame.sprite.Group()
-enemy_group = pygame.sprite.Group()
-collectible_group = pygame.sprite.Group()
-asterisks = pygame.sprite.Group()
+pygame.display.set_caption('Crossy Road')
 clock = pygame.time.Clock()
 size = width, height = 600, 660
 screen = pygame.display.set_mode(size)
@@ -185,11 +181,9 @@ class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
         if self.level.tile_map[self.pos_x][self.pos_y] == 'G':
             create_particles((random.randint(-50, 650), random.randint(-100, 100)))
         elif self.level.tile_map[self.pos_x][self.pos_y] == 'W':
-            print('The End')
-            terminate()
+            game_over()
         elif self.level.tile_map[self.pos_x][self.pos_y] == 'R':
-            print('The End')
-            terminate()
+            game_over()
 
     def update(self):
         self.rect = self.image.get_rect().move(self.level.cell_size * self.pos_y + self.level.cell_size * 0.35,
@@ -281,25 +275,63 @@ def rule_window():
         pygame.display.flip()
 
 
+def game_over():
+    replay_button = Button(130, 60, (190, 233, 221), (180, 255, 235))
+    menu_button = Button(130, 60, (190, 233, 221), (180, 255, 235))
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+        screen.blit(menu_bckgr, (0, 0))
+        font = pygame.font.Font(None, 90)
+        text = font.render('Game over', True, (16, 17, 18))
+        text_rect = text.get_rect(center=(290, 250))
+        screen.blit(text, text_rect)
+
+        replay_button.draw(230, 300, 'replay', replay_the_level, 40)
+        pygame.draw.rect(screen, (180, 255, 235), (229, 299, 132, 62), 3)
+        menu_button.draw(230, 375, 'menu', show_menu, 40)
+        pygame.draw.rect(screen, (180, 255, 235), (229, 374, 132, 62), 3)
+        pygame.display.flip()
+
+
+def replay_the_level():
+    start_game(current_level)
+
+
 def start_level_desert():
+    global current_level
+    current_level = 'level_Desert'
     start_game('level_Desert')
 
 
 def start_level_jungle():
+    global current_level
+    current_level = 'level_Jungle'
     start_game('level_Jungle')
 
 
 def start_level_winter():
+    global current_level
+    current_level = 'level_Winter'
     start_game('level_Winter')
 
 
 def start_level_random():
+    global current_level
     random_level = ['level_Winter', 'level_Jungle', 'level_Desert']
+    current_level = random_level
     start_game(random.choice(random_level))
 
 
 def start_game(name_level):
     global number_of_cells, screen_rect
+    global all_sprites, player_group, enemy_group, collectible_group, asterisks
+    all_sprites = pygame.sprite.Group()
+    player_group = pygame.sprite.Group()
+    enemy_group = pygame.sprite.Group()
+    collectible_group = pygame.sprite.Group()
+    asterisks = pygame.sprite.Group()
     number_of_cells = 12
     level = Level(name_level)
     create_level(level)
