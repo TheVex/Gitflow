@@ -21,7 +21,6 @@ fullname1 = os.path.join('data', music_list[music_number])
 pygame.mixer.music.load(fullname1)
 fullname2 = os.path.join('data', 'button.wav')
 button_sound = pygame.mixer.Sound(fullname2)
-status = False
 
 
 def load_image(name, colorkey=None):  # Функция для загрузки картинок
