@@ -1,0 +1,62 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "Все файлы (*)",
+    "fileStates": {
+        "Keep.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "PineTrees.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Portal.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Tower.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Дополнительные объекты.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Пол.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.imagePath": "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/level1",
+    "map.height": 20,
+    "map.lastUsedFormat": "tmx",
+    "map.layerDataFormat": null,
+    "map.tileHeight": 64,
+    "map.tileWidth": 64,
+    "map.width": 20,
+    "openFiles": [
+    ],
+    "project": "winter_map.tiled-project",
+    "recentFiles": [
+        "Tower.tsx",
+        "PineTrees.tsx",
+        "Keep.tsx",
+        "Portal.tsx",
+        "Пол.tsx",
+        "Дополнительные объекты.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 48,
+        "width": 48
+    },
+    "tileset.type": 0
+}

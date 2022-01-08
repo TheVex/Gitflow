@@ -110,10 +110,11 @@ def print_text(message, x, y, font_colour=(20, 20, 20), font_type='PingPong.ttf'
 
 
 class Level:  # Класс игрового поля
-    def __init__(self, name):  # создание поля
+    def __init__(self, name, free_tiles):  # создание поля
         self.name = name
         self.width = number_of_cells
         self.height = 0
+        self.free_tiles = free_tiles
 
         self.tile_map = []
 
