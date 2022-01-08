@@ -21,6 +21,7 @@ fullname1 = os.path.join('data', music_list[music_number])
 pygame.mixer.music.load(fullname1)
 fullname2 = os.path.join('data', 'button.wav')
 button_sound = pygame.mixer.Sound(fullname2)
+status = False
 
 
 def load_image(name, colorkey=None):  # Функция для загрузки картинок
@@ -247,12 +248,14 @@ class Button:
         self.active_color = active_color
 
     def draw(self, x, y, message, action=None, font_size=30):
+        global number_of_lives
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
         if x < mouse[0] < x + self.width_button and y < mouse[1] < y + self.height_button:
             pygame.draw.rect(screen, self.active_color, (x, y, self.width_button, self.height_button))
 
             if click[0] == 1:
+                number_of_lives = 3
                 pygame.mixer.Sound.play(button_sound)
                 pygame.time.delay(300)
                 if action is not None:
@@ -276,63 +279,78 @@ def rule_window():
 
 
 def game_over():
+    global number_of_lives
     replay_button = Button(130, 60, (190, 233, 221), (180, 255, 235))
     menu_button = Button(130, 60, (190, 233, 221), (180, 255, 235))
+    number_of_lives -= 1
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-        screen.blit(menu_bckgr, (0, 0))
-        font = pygame.font.Font(None, 90)
-        text = font.render('Game over', True, (16, 17, 18))
-        text_rect = text.get_rect(center=(290, 250))
-        screen.blit(text, text_rect)
 
-        replay_button.draw(230, 300, 'replay', replay_the_level, 40)
-        pygame.draw.rect(screen, (180, 255, 235), (229, 299, 132, 62), 3)
-        menu_button.draw(230, 375, 'menu', show_menu, 40)
-        pygame.draw.rect(screen, (180, 255, 235), (229, 374, 132, 62), 3)
-        pygame.display.flip()
+        if number_of_lives < 1:
+            screen.blit(menu_bckgr, (0, 0))
+            font = pygame.font.Font(None, 90)
+            text = font.render('Game over', True, (16, 17, 18))
+            text_rect = text.get_rect(center=(290, 250))
+            screen.blit(text, text_rect)
+
+            replay_button.draw(230, 300, 'replay', replay_the_level, 40)
+            pygame.draw.rect(screen, (180, 255, 235), (229, 299, 132, 62), 3)
+            menu_button.draw(230, 375, 'menu', show_menu, 40)
+            pygame.draw.rect(screen, (180, 255, 235), (229, 374, 132, 62), 3)
+
+            pygame.display.flip()
+        else:
+            replay_the_level()
 
 
 def replay_the_level():
+    global number_of_lives
     start_game(current_level)
 
 
 def start_level_desert():
-    global current_level
+    global current_level, number_of_lives
+    number_of_lives = 3
     current_level = 'level_Desert'
     start_game('level_Desert')
 
 
 def start_level_jungle():
-    global current_level
+    global current_level, number_of_lives
+    number_of_lives = 3
     current_level = 'level_Jungle'
     start_game('level_Jungle')
 
 
 def start_level_winter():
-    global current_level
+    global current_level, number_of_lives
+    number_of_lives = 3
     current_level = 'level_Winter'
     start_game('level_Winter')
 
 
 def start_level_random():
-    global current_level
+    global current_level, number_of_lives
+    number_of_lives = 3
     random_level = ['level_Winter', 'level_Jungle', 'level_Desert']
-    current_level = random_level
-    start_game(random.choice(random_level))
+    current_level = random.choice(random_level)
+    start_game(current_level)
 
 
 def start_game(name_level):
-    global number_of_cells, screen_rect
+    global number_of_cells, screen_rect, number_of_lives
     global all_sprites, player_group, enemy_group, collectible_group, asterisks
+
+
     all_sprites = pygame.sprite.Group()
     player_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
     collectible_group = pygame.sprite.Group()
     asterisks = pygame.sprite.Group()
     number_of_cells = 12
+
     level = Level(name_level)
     create_level(level)
     screen_rect = (0, 0, width, height)
@@ -342,6 +360,36 @@ def start_game(name_level):
     pygame.mixer.music.set_volume(vol)
 
     back_button = Button(75, 50, (190, 233, 221), (180, 255, 235))
+
+    fullname = os.path.join('Общие картинки', 'Жизнь.png')
+    fullname = os.path.join('Картинки', fullname)
+
+    all_sprites_life1 = pygame.sprite.Group()
+    sprite = pygame.sprite.Sprite()
+    image = load_image(fullname)
+    sprite.image = pygame.transform.scale(image, (50, 50))
+    sprite.rect = sprite.image.get_rect()
+    all_sprites_life1.add(sprite)
+    sprite.rect.x = 540
+    sprite.rect.y = 605
+
+    all_sprites_life2 = pygame.sprite.Group()
+    sprite = pygame.sprite.Sprite()
+    image = load_image(fullname)
+    sprite.image = pygame.transform.scale(image, (50, 50))
+    sprite.rect = sprite.image.get_rect()
+    all_sprites_life2.add(sprite)
+    sprite.rect.x = 485
+    sprite.rect.y = 605
+
+    all_sprites_life3 = pygame.sprite.Group()
+    sprite = pygame.sprite.Sprite()
+    image = load_image(fullname)
+    sprite.image = pygame.transform.scale(image, (50, 50))
+    sprite.rect = sprite.image.get_rect()
+    all_sprites_life3.add(sprite)
+    sprite.rect.x = 430
+    sprite.rect.y = 605
 
     while True:
         for event in pygame.event.get():
@@ -394,6 +442,17 @@ def start_game(name_level):
 
         asterisks.update()
         asterisks.draw(screen)
+
+        if number_of_lives == 3:
+            all_sprites_life1.draw(screen)
+            all_sprites_life2.draw(screen)
+            all_sprites_life3.draw(screen)
+        elif number_of_lives == 2:
+            all_sprites_life1.draw(screen)
+            all_sprites_life2.draw(screen)
+        else:
+            all_sprites_life1.draw(screen)
+
 
         back_button.draw(10, 605, '<--', show_menu, 40)
         pygame.draw.rect(screen, (180, 255, 235), (9, 604, 77, 52), 3)
