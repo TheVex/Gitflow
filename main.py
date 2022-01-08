@@ -14,13 +14,14 @@ tile_images = {'B': pygame.color.Color('Black'),  # Ничего (Black)
                'W': pygame.color.Color('Blue'),  # Вода (Water)
                'G': pygame.color.Color('Green'),  # Победа (Green)
                'S': pygame.color.Color('Brown'), }  # Стена (Stena ('Wall' начинается как 'Water'))
-music_number = 1
-music_list = ['музыка1.mp3', 'музыка2.mp3', 'музыка3.mp3', 'музыка4.mp3', 'музыка5.mp3',
-              'музыка6.mp3', 'музыка7.mp3', 'музыка8.mp3', 'музыка9.mp3', 'музыка10.mp3']
-fullname1 = os.path.join('data', music_list[music_number])
+fullname1 = os.path.join('data', 'музыка1.mp3')
 pygame.mixer.music.load(fullname1)
 fullname2 = os.path.join('data', 'button.wav')
 button_sound = pygame.mixer.Sound(fullname2) # Подключение музыки
+pygame.mixer.music.play(-1)
+vol = 0.5
+pygame.mixer.music.set_volume(vol)
+flPause = False
 
 
 def load_image(name, colorkey=None):  # Функция для загрузки картинок
@@ -71,7 +72,7 @@ def terminate():  # Завершает работу
 
 
 def show_menu(): #  окнj меню
-    global menu_bckgr
+    global menu_bckgr, flPause, vol
     fullname = os.path.join('Общие картинки', 'Фон1.jpg') # подключение фона
     fullname = os.path.join('Картинки', fullname)
     fullname = os.path.join('data', fullname)
@@ -87,6 +88,20 @@ def show_menu(): #  окнj меню
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:  # остановка музыки
+                    flPause = not flPause
+                    if flPause:
+                        pygame.mixer.music.pause()
+                    else:
+                        pygame.mixer.music.unpause()
+
+                elif event.key == pygame.K_a:  # изменение громкости звука
+                    vol -= 0.1
+                    pygame.mixer.music.set_volume(vol)
+                elif event.key == pygame.K_d:
+                    vol += 0.1
+                    pygame.mixer.music.set_volume(vol)
         screen.blit(menu_bckgr, (0, 0))
         pygame.draw.rect(screen, (180, 255, 235), (150, 174, 300, 2), 0)
 
@@ -265,11 +280,26 @@ class Button: # класс кнопок
 
 
 def rule_window(): # окно с правилами игры
+    global flPause, vol
     back_button = Button(75, 60, (190, 233, 221), (180, 255, 235)) # оздание кнопки вернуться в меню
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:  # остановка музыки
+                    flPause = not flPause
+                    if flPause:
+                        pygame.mixer.music.pause()
+                    else:
+                        pygame.mixer.music.unpause()
+
+                elif event.key == pygame.K_a:  # изменение громкости звука
+                    vol -= 0.1
+                    pygame.mixer.music.set_volume(vol)
+                elif event.key == pygame.K_d:
+                    vol += 0.1
+                    pygame.mixer.music.set_volume(vol)
         screen.blit(menu_bckgr, (0, 0))
         back_button.draw(20, 580, '<--', show_menu, 40)
         pygame.draw.rect(screen, (180, 255, 235), (19, 579, 77, 62), 3)
@@ -277,7 +307,7 @@ def rule_window(): # окно с правилами игры
 
 
 def game_over(): # окно проигрыша
-    global number_of_lives
+    global number_of_lives, flPause, vol
     replay_button = Button(130, 60, (190, 233, 221), (180, 255, 235)) #создание кнопок переиграть и вернуться в меню
     menu_button = Button(130, 60, (190, 233, 221), (180, 255, 235))
     number_of_lives -= 1
@@ -285,6 +315,20 @@ def game_over(): # окно проигрыша
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:  # остановка музыки
+                    flPause = not flPause
+                    if flPause:
+                        pygame.mixer.music.pause()
+                    else:
+                        pygame.mixer.music.unpause()
+
+                elif event.key == pygame.K_a:  # изменение громкости звука
+                    vol -= 0.1
+                    pygame.mixer.music.set_volume(vol)
+                elif event.key == pygame.K_d:
+                    vol += 0.1
+                    pygame.mixer.music.set_volume(vol)
 
         if number_of_lives < 1: # открытие окна в случае отсутствия жизней
             screen.blit(menu_bckgr, (0, 0))
@@ -300,6 +344,8 @@ def game_over(): # окно проигрыша
 
             pygame.display.flip()
         else:
+            pygame.mixer.Sound.play(button_sound)
+            pygame.time.delay(300)
             replay_the_level()
 
 
@@ -338,7 +384,7 @@ def start_level_random(): # функция level_random
 
 
 def start_game(name_level):
-    global number_of_cells, screen_rect, number_of_lives
+    global number_of_cells, screen_rect, number_of_lives, vol, flPause
     global all_sprites, player_group, enemy_group, collectible_group, asterisks
 
 
@@ -352,10 +398,6 @@ def start_game(name_level):
     level = Level(name_level)
     create_level(level)
     screen_rect = (0, 0, width, height)
-    pygame.mixer.music.play(-1)
-    flPause = False
-    vol = 0.5
-    pygame.mixer.music.set_volume(vol)
 
     back_button = Button(75, 50, (190, 233, 221), (180, 255, 235))
 
@@ -416,22 +458,7 @@ def start_game(name_level):
                 elif event.key == pygame.K_d:
                     vol += 0.1
                     pygame.mixer.music.set_volume(vol)
-                elif event.key == pygame.K_w:  # переключение музыки
-                    music_number += 1
-                    if music_number == 10:
-                        music_number = 0
-                    fullname = os.path.join('data', music_list[music_number])
-                    pygame.mixer.music.load(fullname)
-                    pygame.mixer.music.play(-1)
-                    pygame.mixer.music.set_volume(vol)
-                elif event.key == pygame.K_s:
-                    music_number -= 1
-                    if music_number == -1:
-                        music_number = 9
-                    fullname = os.path.join('data', music_list[music_number])
-                    pygame.mixer.music.load(fullname)
-                    pygame.mixer.music.play(-1)
-                    pygame.mixer.music.set_volume(vol)
+
 
         level.player.on_tile()
         screen.blit(menu_bckgr, (0, 0))
