@@ -4,7 +4,7 @@ import os
 import random
 
 pygame.init()
-pygame.display.set_caption('Crossy Road')
+pygame.display.set_caption('') # Название игры
 clock = pygame.time.Clock()
 size = width, height = 600, 660
 screen = pygame.display.set_mode(size)
@@ -20,13 +20,12 @@ music_list = ['музыка1.mp3', 'музыка2.mp3', 'музыка3.mp3', 'м
 fullname1 = os.path.join('data', music_list[music_number])
 pygame.mixer.music.load(fullname1)
 fullname2 = os.path.join('data', 'button.wav')
-button_sound = pygame.mixer.Sound(fullname2)
+button_sound = pygame.mixer.Sound(fullname2) # Подключение музыки
 
 
 def load_image(name, colorkey=None):  # Функция для загрузки картинок
     fn = os.path.join('data', name)
-    # если файл не существует, то выходим
-    if not os.path.isfile(fn):
+    if not os.path.isfile(fn): # если файл не существует, то выходим
         print(f"Файл с изображением '{fn}' не найден")
         sys.exit()
     image = pygame.image.load(fn)
@@ -71,13 +70,13 @@ def terminate():  # Завершает работу
     sys.exit()
 
 
-def show_menu():
+def show_menu(): #  окнj меню
     global menu_bckgr
-    fullname = os.path.join('Общие картинки', 'Фон1.jpg')
+    fullname = os.path.join('Общие картинки', 'Фон1.jpg') # подключение фона
     fullname = os.path.join('Картинки', fullname)
     fullname = os.path.join('data', fullname)
     menu_bckgr = pygame.image.load(fullname)
-    start_desert_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
+    start_desert_button = Button(200, 50, (190, 233, 221), (180, 255, 235)) # создание кнопок
     start_jungle_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
     start_winter_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
     start_random_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
@@ -91,12 +90,12 @@ def show_menu():
         screen.blit(menu_bckgr, (0, 0))
         pygame.draw.rect(screen, (180, 255, 235), (150, 174, 300, 2), 0)
 
-        font = pygame.font.Font(None, 75)
+        font = pygame.font.Font(None, 75) # Надпись 'Start game'
         text = font.render('Start game', True, (16, 17, 18))
         text_rect = text.get_rect(center=(300, 155))
         screen.blit(text, text_rect)
 
-        start_desert_button.draw(200, 200, 'level "Desert"', start_level_desert, 30)
+        start_desert_button.draw(200, 200, 'level "Desert"', start_level_desert, 30) # Прорисовка кнопок
         pygame.draw.rect(screen, (180, 255, 235), (199, 199, 202, 52), 3)
         start_jungle_button.draw(200, 270, 'level "Jungle"', start_level_jungle, 30)
         pygame.draw.rect(screen, (180, 255, 235), (199, 269, 202, 52), 3)
@@ -112,7 +111,7 @@ def show_menu():
         clock.tick(60)
 
 
-def print_text(message, x, y, font_colour=(20, 20, 20), font_type='PingPong.ttf', font_size=30):
+def print_text(message, x, y, font_colour=(20, 20, 20), font_type='PingPong.ttf', font_size=30): # Надписи на кнопках
     font_type = os.path.join('data', font_type)
     font_type = pygame.font.Font(font_type, font_size)
     text = font_type.render(message, True, font_colour)
@@ -218,7 +217,7 @@ class Collectible(pygame.sprite.Sprite):  # Класс собираемых об
                                                self.level.cell_size * self.pos_x + self.level.cell_size * 0.2)
 
 
-class Particle(pygame.sprite.Sprite):
+class Particle(pygame.sprite.Sprite): # Работа частиц, появляющихся при победе
     fire = [load_image("star.png")]  # сгенерируем частицы разного размера
     for scale in (5, 10, 20):
         fire.append(pygame.transform.scale(fire[0], (scale, scale)))
@@ -239,14 +238,14 @@ class Particle(pygame.sprite.Sprite):
             self.kill()
 
 
-class Button:
+class Button: # класс кнопок
     def __init__(self, width_button, height_button, inactive_color, active_color):
         self.width_button = width_button
         self.height_button = height_button
         self.inactive_color = inactive_color
         self.active_color = active_color
 
-    def draw(self, x, y, message, action=None, font_size=30):
+    def draw(self, x, y, message, action=None, font_size=30): # Нажаттие на кнопки
         global number_of_lives
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
@@ -262,11 +261,11 @@ class Button:
         else:
             pygame.draw.rect(screen, self.inactive_color, (x, y, self.width_button, self.height_button))
 
-        print_text(message=message, x=x + 10, y=y + 10, font_size=font_size)
+        print_text(message=message, x=x + 10, y=y + 10, font_size=font_size) # Надписи на кнопках
 
 
-def rule_window():
-    back_button = Button(75, 60, (190, 233, 221), (180, 255, 235))
+def rule_window(): # окно с правилами игры
+    back_button = Button(75, 60, (190, 233, 221), (180, 255, 235)) # оздание кнопки вернуться в меню
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -277,9 +276,9 @@ def rule_window():
         pygame.display.flip()
 
 
-def game_over():
+def game_over(): # окно проигрыша
     global number_of_lives
-    replay_button = Button(130, 60, (190, 233, 221), (180, 255, 235))
+    replay_button = Button(130, 60, (190, 233, 221), (180, 255, 235)) #создание кнопок переиграть и вернуться в меню
     menu_button = Button(130, 60, (190, 233, 221), (180, 255, 235))
     number_of_lives -= 1
     while True:
@@ -287,7 +286,7 @@ def game_over():
             if event.type == pygame.QUIT:
                 terminate()
 
-        if number_of_lives < 1:
+        if number_of_lives < 1: # открытие окна в случае отсутствия жизней
             screen.blit(menu_bckgr, (0, 0))
             font = pygame.font.Font(None, 90)
             text = font.render('Game over', True, (16, 17, 18))
@@ -304,33 +303,33 @@ def game_over():
             replay_the_level()
 
 
-def replay_the_level():
+def replay_the_level(): # функция "переиграть"
     global number_of_lives
     start_game(current_level)
 
 
-def start_level_desert():
+def start_level_desert(): # функция level_desert
     global current_level, number_of_lives
     number_of_lives = 3
     current_level = 'level_Desert'
     start_game('level_Desert')
 
 
-def start_level_jungle():
+def start_level_jungle(): # функция level_jungle
     global current_level, number_of_lives
     number_of_lives = 3
     current_level = 'level_Jungle'
     start_game('level_Jungle')
 
 
-def start_level_winter():
+def start_level_winter(): # функция level_winter
     global current_level, number_of_lives
     number_of_lives = 3
     current_level = 'level_Winter'
     start_game('level_Winter')
 
 
-def start_level_random():
+def start_level_random(): # функция level_random
     global current_level, number_of_lives
     number_of_lives = 3
     random_level = ['level_Winter', 'level_Jungle', 'level_Desert']
