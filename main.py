@@ -15,6 +15,8 @@ clock = pygame.time.Clock()
 size = width, height = 600, 600
 screen = pygame.display.set_mode(size)
 GRAVITY = 1.5
+ENEMY_EVENT_TYPE = 30
+
 
 tile_images = {'B': pygame.color.Color('Black'),  # Ничего (Black)
                'R': pygame.color.Color('Red'),  # Смерть (Red)
@@ -63,7 +65,7 @@ def create_level(level):  # Лезет в текстовый файл и доб�
             elif objects[i][j] == 'O':
                 level.collectible_list.append(Collectible(i, j, level))
             elif objects[i][j] == 'E':
-                level.enemy_list.append(Enemy(i, j, level))
+                level.enemy_list.append(Enemy(j, i, level))
             elif objects[i][j] == 'P':
                 level.player = Player(i, j, level)
 
@@ -124,13 +126,9 @@ class Level:  # Класс игрового поля
     def render(self, screen):  # Прорисовка поля
         for i in range(self.height):
             for j in range(self.width):
-                pygame.draw.rect(screen, 'white', (j * self.cell_size,
-                                                   i * self.cell_size,
-                                                   self.cell_size, self.cell_size), 1)
-
                 screen.fill(tile_images[self.tile_map[i][j]], ((j * self.cell_size) + 1,
                                                             (i * self.cell_size) + 1,
-                                                            self.cell_size - 2, self.cell_size - 2))
+                                                            self.cell_size, self.cell_size))
 
                 for m in self.enemy_list:
                     m.update()
@@ -138,14 +136,39 @@ class Level:  # Класс игрового поля
                 for n in self.collectible_list:
                     n.update()
 
+    def find_path_step(self, start, target):
+        INF = 1000
+        x, y = start
+        distance = [[INF] * self.width for _ in range(self.height)]
+        distance[y][x] = 0
+        prev = [[None] * self.width for _ in range(self.height)]
+        queue = [(x, y)]
+        while queue:
+            x, y = queue.pop(0)
+            for dx, dy in (1, 0), (0, 1), (-1, 0), (0, -1):
+                next_x, next_y = x + dx, y + dy
+                if 0 <= next_x < self.width and 0 <= next_y < self.height \
+                        and self.is_free(next_x, next_y, False) and distance[next_y][next_x] == INF:
+                    distance[next_y][next_x] = distance[y][x] + 1
+                    prev[next_y][next_x] = (x, y)
+                    queue.append((next_x, next_y))
+        x, y = target
+        if distance[y][x] == INF or start == target:
+            return start
+        while prev[y][x] != start:
+            x, y = prev[y][x]
+        return x, y
 
+    def move_enemy(self):
+        for i in self.enemy_list:
+            i.move()
 
-    def is_free(self, y, x, only_wall=True):
+    def is_free(self, x, y, only_wall=True):
         if only_wall:
-            if self.tile_map[x][y] != 'S':
+            if self.tile_map[y][x] != 'S':
                 return True
             return False
-        if self.tile_map[x][y] == 'B':
+        if self.tile_map[y][x] == 'B':
             return True
         return False
 
@@ -175,6 +198,9 @@ class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
                 self.pos_y += 1
         self.update()
 
+    def get_pos(self):
+        return (self.pos_x, self.pos_y)
+
     def on_tile(self):
         if self.level.tile_map[self.pos_x][self.pos_y] == 'G':
             create_particles((random.randint(-50, 650), random.randint(-100, 100)))
@@ -197,11 +223,20 @@ class Enemy(pygame.sprite.Sprite, Level):  # КЛАСС ПРОТИВНИКА
         self.pos_y = pos_y
         self.image = enemy_image
         self.level = level
+        self.delay = 100
+        pygame.time.set_timer(ENEMY_EVENT_TYPE, self.delay)
         self.update()
 
     def update(self):
         self.rect = self.image.get_rect().move(self.level.cell_size * self.pos_y + self.level.cell_size * 0.35,
                                                self.level.cell_size * self.pos_x + self.level.cell_size * 0.2)
+
+    def get_pos(self):
+        return (self.pos_x, self.pos_y)
+
+    def move(self):
+        next_position = self.level.find_path_step(self.get_pos(), self.level.player.get_pos())
+        self.pos_x, self.pos_y = next_position
 
 
 class Collectible(pygame.sprite.Sprite):  # Класс собираемых объектов (пока не знаю каких, Даша - решай)
@@ -281,6 +316,8 @@ def start_game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
+            if event.type == ENEMY_EVENT_TYPE:
+                level.move_enemy()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     level.player.move('left')
