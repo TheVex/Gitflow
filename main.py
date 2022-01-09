@@ -4,7 +4,7 @@ import os
 import random
 
 pygame.init()
-pygame.display.set_caption('') # Название игры
+pygame.display.set_caption('')  # Название игры
 clock = pygame.time.Clock()
 size = width, height = 600, 660
 screen = pygame.display.set_mode(size)
@@ -17,16 +17,16 @@ tile_images = {'B': pygame.color.Color('Black'),  # Ничего (Black)
 fullname1 = os.path.join('data', 'музыка1.mp3')
 pygame.mixer.music.load(fullname1)
 fullname2 = os.path.join('data', 'button.wav')
-button_sound = pygame.mixer.Sound(fullname2) # Подключение музыки
+button_sound = pygame.mixer.Sound(fullname2)  # Подключение музыки
 pygame.mixer.music.play(-1)
-vol = 0.5
+vol = 0.5  # громкость музыки
 pygame.mixer.music.set_volume(vol)
-flPause = False
+flPause = False  # флаг включена/выключена музыка
 
 
 def load_image(name, colorkey=None):  # Функция для загрузки картинок
     fn = os.path.join('data', name)
-    if not os.path.isfile(fn): # если файл не существует, то выходим
+    if not os.path.isfile(fn):  # если файл не существует, то выходим
         print(f"Файл с изображением '{fn}' не найден")
         sys.exit()
     image = pygame.image.load(fn)
@@ -71,13 +71,13 @@ def terminate():  # Завершает работу
     sys.exit()
 
 
-def show_menu(): #  окнj меню
+def show_menu():  # окнj меню
     global menu_bckgr, flPause, vol
-    fullname = os.path.join('Общие картинки', 'Фон1.jpg') # подключение фона
+    fullname = os.path.join('Общие картинки', 'Фон1.jpg')  # подключение фона
     fullname = os.path.join('Картинки', fullname)
     fullname = os.path.join('data', fullname)
     menu_bckgr = pygame.image.load(fullname)
-    start_desert_button = Button(200, 50, (190, 233, 221), (180, 255, 235)) # создание кнопок
+    start_desert_button = Button(200, 50, (190, 233, 221), (180, 255, 235))  # создание кнопок
     start_jungle_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
     start_winter_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
     start_random_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
@@ -105,12 +105,12 @@ def show_menu(): #  окнj меню
         screen.blit(menu_bckgr, (0, 0))
         pygame.draw.rect(screen, (180, 255, 235), (150, 174, 300, 2), 0)
 
-        font = pygame.font.Font(None, 75) # Надпись 'Start game'
+        font = pygame.font.Font(None, 75)  # Надпись 'Start game'
         text = font.render('Start game', True, (16, 17, 18))
         text_rect = text.get_rect(center=(300, 155))
         screen.blit(text, text_rect)
 
-        start_desert_button.draw(200, 200, 'level "Desert"', start_level_desert, 30) # Прорисовка кнопок
+        start_desert_button.draw(200, 200, 'level "Desert"', start_level_desert, 30)  # Прорисовка кнопок
         pygame.draw.rect(screen, (180, 255, 235), (199, 199, 202, 52), 3)
         start_jungle_button.draw(200, 270, 'level "Jungle"', start_level_jungle, 30)
         pygame.draw.rect(screen, (180, 255, 235), (199, 269, 202, 52), 3)
@@ -126,7 +126,7 @@ def show_menu(): #  окнj меню
         clock.tick(60)
 
 
-def print_text(message, x, y, font_colour=(20, 20, 20), font_type='PingPong.ttf', font_size=30): # Надписи на кнопках
+def print_text(message, x, y, font_colour=(20, 20, 20), font_type='PingPong.ttf', font_size=30):  # Надписи на кнопках
     font_type = os.path.join('data', font_type)
     font_type = pygame.font.Font(font_type, font_size)
     text = font_type.render(message, True, font_colour)
@@ -192,8 +192,14 @@ class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
         self.update()
 
     def on_tile(self):
+        global amount_of_animation
         if self.level.tile_map[self.pos_x][self.pos_y] == 'G':
-            create_particles((random.randint(-50, 650), random.randint(-100, 100)))
+            if amount_of_animation > 0:
+                amount_of_animation -= 1
+                create_particles((random.randint(-50, 650), random.randint(-100, 100)))
+            else:
+                win_window()
+
         elif self.level.tile_map[self.pos_x][self.pos_y] == 'W':
             game_over()
         elif self.level.tile_map[self.pos_x][self.pos_y] == 'R':
@@ -232,7 +238,7 @@ class Collectible(pygame.sprite.Sprite):  # Класс собираемых об
                                                self.level.cell_size * self.pos_x + self.level.cell_size * 0.2)
 
 
-class Particle(pygame.sprite.Sprite): # Работа частиц, появляющихся при победе
+class Particle(pygame.sprite.Sprite):  # Работа частиц, появляющихся при победе
     fire = [load_image("star.png")]  # сгенерируем частицы разного размера
     for scale in (5, 10, 20):
         fire.append(pygame.transform.scale(fire[0], (scale, scale)))
@@ -253,14 +259,14 @@ class Particle(pygame.sprite.Sprite): # Работа частиц, появля�
             self.kill()
 
 
-class Button: # класс кнопок
+class Button:  # класс кнопок
     def __init__(self, width_button, height_button, inactive_color, active_color):
         self.width_button = width_button
         self.height_button = height_button
         self.inactive_color = inactive_color
         self.active_color = active_color
 
-    def draw(self, x, y, message, action=None, font_size=30): # Нажаттие на кнопки
+    def draw(self, x, y, message, action=None, font_size=30):  # Нажаттие на кнопки
         global number_of_lives
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
@@ -276,12 +282,12 @@ class Button: # класс кнопок
         else:
             pygame.draw.rect(screen, self.inactive_color, (x, y, self.width_button, self.height_button))
 
-        print_text(message=message, x=x + 10, y=y + 10, font_size=font_size) # Надписи на кнопках
+        print_text(message=message, x=x + 10, y=y + 10, font_size=font_size)  # Надписи на кнопках
 
 
-def rule_window(): # окно с правилами игры
+def rule_window():  # окно с правилами игры
     global flPause, vol
-    back_button = Button(75, 60, (190, 233, 221), (180, 255, 235)) # оздание кнопки вернуться в меню
+    back_button = Button(75, 60, (190, 233, 221), (180, 255, 235))  # оздание кнопки вернуться в меню
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -306,9 +312,36 @@ def rule_window(): # окно с правилами игры
         pygame.display.flip()
 
 
-def game_over(): # окно проигрыша
+def win_window():  # окно с правилами игры
+    global flPause, vol
+    back_button = Button(75, 60, (190, 233, 221), (180, 255, 235))  # оздание кнопки вернуться в меню
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:  # остановка музыки
+                    flPause = not flPause
+                    if flPause:
+                        pygame.mixer.music.pause()
+                    else:
+                        pygame.mixer.music.unpause()
+
+                elif event.key == pygame.K_a:  # изменение громкости звука
+                    vol -= 0.1
+                    pygame.mixer.music.set_volume(vol)
+                elif event.key == pygame.K_d:
+                    vol += 0.1
+                    pygame.mixer.music.set_volume(vol)
+        screen.blit(menu_bckgr, (0, 0))
+        back_button.draw(20, 580, '<--', show_menu, 40)
+        pygame.draw.rect(screen, (180, 255, 235), (19, 579, 77, 62), 3)
+        pygame.display.flip()
+
+
+def game_over():  # окно проигрыша
     global number_of_lives, flPause, vol
-    replay_button = Button(130, 60, (190, 233, 221), (180, 255, 235)) #создание кнопок переиграть и вернуться в меню
+    replay_button = Button(130, 60, (190, 233, 221), (180, 255, 235))  # создание кнопок переиграть и вернуться в меню
     menu_button = Button(130, 60, (190, 233, 221), (180, 255, 235))
     number_of_lives -= 1
     while True:
@@ -330,7 +363,7 @@ def game_over(): # окно проигрыша
                     vol += 0.1
                     pygame.mixer.music.set_volume(vol)
 
-        if number_of_lives < 1: # открытие окна в случае отсутствия жизней
+        if number_of_lives < 1:  # открытие окна в случае отсутствия жизней
             screen.blit(menu_bckgr, (0, 0))
             font = pygame.font.Font(None, 90)
             text = font.render('Game over', True, (16, 17, 18))
@@ -349,33 +382,33 @@ def game_over(): # окно проигрыша
             replay_the_level()
 
 
-def replay_the_level(): # функция "переиграть"
+def replay_the_level():  # функция "переиграть"
     global number_of_lives
     start_game(current_level)
 
 
-def start_level_desert(): # функция level_desert
+def start_level_desert():  # функция level_desert
     global current_level, number_of_lives
     number_of_lives = 3
     current_level = 'level_Desert'
     start_game('level_Desert')
 
 
-def start_level_jungle(): # функция level_jungle
+def start_level_jungle():  # функция level_jungle
     global current_level, number_of_lives
     number_of_lives = 3
     current_level = 'level_Jungle'
     start_game('level_Jungle')
 
 
-def start_level_winter(): # функция level_winter
+def start_level_winter():  # функция level_winter
     global current_level, number_of_lives
     number_of_lives = 3
     current_level = 'level_Winter'
     start_game('level_Winter')
 
 
-def start_level_random(): # функция level_random
+def start_level_random():  # функция level_random
     global current_level, number_of_lives
     number_of_lives = 3
     random_level = ['level_Winter', 'level_Jungle', 'level_Desert']
@@ -384,10 +417,10 @@ def start_level_random(): # функция level_random
 
 
 def start_game(name_level):
-    global number_of_cells, screen_rect, number_of_lives, vol, flPause
+    global number_of_cells, screen_rect, number_of_lives, vol, flPause, amount_of_animation
     global all_sprites, player_group, enemy_group, collectible_group, asterisks
 
-
+    amount_of_animation = 100  # количество прокруток анимации победы
     all_sprites = pygame.sprite.Group()
     player_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
@@ -459,7 +492,6 @@ def start_game(name_level):
                     vol += 0.1
                     pygame.mixer.music.set_volume(vol)
 
-
         level.player.on_tile()
         screen.blit(menu_bckgr, (0, 0))
         level.render(screen)
@@ -477,7 +509,6 @@ def start_game(name_level):
             all_sprites_life2.draw(screen)
         else:
             all_sprites_life1.draw(screen)
-
 
         back_button.draw(10, 605, '<--', show_menu, 40)
         pygame.draw.rect(screen, (180, 255, 235), (9, 604, 77, 52), 3)
