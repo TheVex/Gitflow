@@ -30,11 +30,11 @@
             "scaleInEditor": 1
         },
         "Winter_map.tmx": {
-            "scale": 0.89,
-            "selectedLayer": 1,
+            "scale": 1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 480.3370786516854,
-                "y": -398.87640449438203
+                "x": 469.5,
+                "y": 262
             }
         },
         "Дополнительные объекты.tsx": {
@@ -57,17 +57,21 @@
     "map.width": 20,
     "openFiles": [
         "Winter_map.tmx",
+        "Keep.tsx",
+        "PineTrees.tsx",
+        "Portal.tsx",
+        "Tower.tsx",
         "Winter.tsx"
     ],
     "project": "winter_map.tiled-project",
     "recentFiles": [
         "Winter.tsx",
-        "Keep.tsx",
-        "Пол.tsx",
-        "Winter_map.tmx",
         "Tower.tsx",
-        "PineTrees.tsx",
         "Portal.tsx",
+        "PineTrees.tsx",
+        "Keep.tsx",
+        "Winter_map.tmx",
+        "Пол.tsx",
         "Дополнительные объекты.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",

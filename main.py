@@ -13,7 +13,7 @@ collectible_group = pygame.sprite.Group()
 asterisks = pygame.sprite.Group()
 
 clock = pygame.time.Clock()
-size = width, height = 960, 960
+size = width, height = 600, 600
 screen = pygame.display.set_mode(size)
 GRAVITY = 1.5
 ENEMY_EVENT_TYPE = 30
@@ -64,7 +64,6 @@ class Level:  # Класс игрового поля
     def render(self):  # Прорисовка поля
         for y in range(self.height):
             for x in range(self.width):
-
                 image1 = self.tile_map.get_tile_image(x, y, 0)
                 screen.blit(image1, (x * self.tile_size, y * self.tile_size))
 
@@ -97,7 +96,10 @@ class Level:  # Класс игрового поля
         return x, y
 
     def get_tile_id(self, position):
-        return self.tile_map.tiledgidmap(self.tile_map.get_tile_gid(*position, 1))
+        print(self.tile_map.tiledgidmap[self.tile_map.get_tile_gid(*position, 1)])
+
+        return self.tile_map.tiledgidmap[self.tile_map.get_tile_gid(*position, 1)]
+
 
     def is_free(self, position):
         return self.get_tile_id(position) in self.free_tiles
@@ -119,23 +121,38 @@ class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
         self.pos_x, self.pos_y = pos
 
     def render(self, level):
-        self.rect = self.image.get_rect().move(level.tile_size * self.pos_y + level.tile_size,
-                                               level.tile_size * self.pos_x + level.tile_size)
+        self.rect = self.image.get_rect().move(level.tile_size * self.pos_x,
+                                               level.tile_size * self.pos_y)
 
 
 class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
-    def __init__(self, pos_x, pos_y, level):
+    def __init__(self, pos, level, sheet, columns, rows):
         super(Enemy, self).__init__(enemy_group, all_sprites)
-        self.pos_x = pos_x
-        self.pos_y = pos_y
-        self.image = enemy_image
+        self.pos_x, self.pos_y = pos
         self.level = level
-        self.delay = 100
+        self.delay = 300
         pygame.time.set_timer(ENEMY_EVENT_TYPE, self.delay)
-        self.update()
+        self.frames = []
+        self.cut_sheet(sheet, columns, rows)
+        self.cur_frame = 0
+        self.image = self.frames[self.cur_frame]
 
-    def render(self, level):
-        pass
+    def cut_sheet(self, sheet, columns, rows):
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+        for j in range(1):
+            for i in range(5):
+                frame_location = (self.rect.w * i, self.rect.h * j)
+                self.frames.append(sheet.subsurface(pygame.Rect(
+                    frame_location, self.rect.size)))
+
+    def render(self):
+        self.rect = self.image.get_rect().move(self.level.tile_size * self.pos_x,
+                                               self.level.tile_size * self.pos_y)
+
+    def update_frame(self):
+        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
+        self.image = self.frames[self.cur_frame]
 
     def get_pos(self):
         return self.pos_x, self.pos_y
@@ -143,9 +160,7 @@ class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
     def set_pos(self, pos):
         self.pos_x, self.pos_y = pos
 
-    def move(self):
-        next_position = self.level.find_path_step(self.get_pos(), self.level.player.get_pos())
-        self.pos_x, self.pos_y = next_position
+
 
 
 class Collectible(pygame.sprite.Sprite):  # Класс собираемых объектов (пока не знаю каких, Даша - решай)
@@ -186,6 +201,10 @@ class Game:
             next_y += 1
         if self.level.is_free((next_x, next_y)):
             self.player.set_pos((next_x, next_y))
+
+    def move_enemy(self, enemy):
+        next_position = self.level.find_path_step(enemy.get_pos(), self.player.get_pos())
+        enemy.pos_x, enemy.pos_y = next_position
 
 
 
@@ -276,9 +295,15 @@ def print_text(message, x, y, font_colour=(20, 20, 20), font_type='PingPong.ttf'
 def start_game():
     global screen_rect, screen
 
-    level = Level('winter_map', [0, 34], 34)
-    player = Player('mario.png', (11, 19))
-    game = Game(level, player, [])
+    size = width, height = 640, 640
+    screen = pygame.display.set_mode(size)
+
+    level = Level('winter_map', [27, 30, 44], 44)
+    player = Player('mario.png', (10, 16))
+    enemies = []
+    for i in (1, 1), (18, 1), (1, 18), (18, 18), (5, 10), (10, 5):
+        enemies.append(Enemy(i, level, enemy_image, 6, 8))
+    game = Game(level, player, enemies)
 
     screen_rect = (0, 0, width, height)
 
@@ -293,8 +318,10 @@ def start_game():
                 terminate()
             if event.type == ENEMY_EVENT_TYPE:
                 for i in game.enemy_list:
-                    i.move()
+                    game.move_enemy(i)
+                    i.update_frame()
             elif event.type == pygame.KEYDOWN:
+                game.move_player()
                 if event.key == pygame.K_SPACE:  # остановка музыки
                     flPause = not flPause
                     if flPause:
@@ -339,7 +366,7 @@ def start_game():
 
 
 player_image = load_image('mario.png')
-enemy_image = load_image('box.png')
+enemy_image = load_image('winter_map\Yeti.png')
 star_image = load_image('star.png')
 
 if __name__ == '__main__':
