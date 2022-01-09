@@ -131,7 +131,6 @@ class Level:  # Класс игрового поля
         self.width = self.tile_map.width
         self.tile_size = self.tile_map.tilewidth
 
-
     def render(self):  # Прорисовка поля
         for y in range(self.height):
             for x in range(self.width):
@@ -140,8 +139,6 @@ class Level:  # Класс игрового поля
 
                 image2 = self.tile_map.get_tile_image(x, y, 1)
                 screen.blit(image2, (x * self.tile_size, y * self.tile_size))
-
-
 
     def find_path_step(self, start, target):
         INF = 1000
@@ -171,10 +168,8 @@ class Level:  # Класс игрового поля
 
         return self.tile_map.tiledgidmap[self.tile_map.get_tile_gid(*position, 1)]
 
-
     def is_free(self, position):
         return self.get_tile_id(position) in self.free_tiles
-
 
 
 class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
@@ -231,8 +226,6 @@ class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
         self.pos_x, self.pos_y = pos
 
 
-
-
 class Collectible(pygame.sprite.Sprite):  # Класс собираемых объектов (пока не знаю каких, Даша - решай)
     def __init__(self, pos_x, pos_y, level):
         super(Collectible, self).__init__(collectible_group, all_sprites)
@@ -276,11 +269,11 @@ class Game:
     def check_tile(self):
         global amount_of_animation
         if self.level.get_tile_id(self.player.get_pos()) == 44:
-            if amount_of_animation > 0:
+            while amount_of_animation != 0:
                 amount_of_animation -= 1
                 create_particles((random.randint(-50, 650), random.randint(-100, 100)))
-            else:
-                win_window()
+                clock.tick(100)
+            win_window()
 
     def move_enemy(self, enemy):
         next_position = self.level.find_path_step(enemy.get_pos(), self.player.get_pos())
@@ -480,7 +473,7 @@ def start_game(name_level):
     asterisks = pygame.sprite.Group()
     number_of_cells = 12
 
-    level = Level('winter_map', [27, 30, 44], 44)
+    level = Level(f'winter_map', [27, 30, 44], 44)
     player = Player('mario.png', (10, 16))
     enemies = []
     for i in (1, 1), (18, 1), (1, 18), (18, 18), (5, 10), (10, 5):

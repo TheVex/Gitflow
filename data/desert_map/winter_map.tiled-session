@@ -1,0 +1,85 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "Winter_map.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "Все файлы (*)",
+    "fileStates": {
+        "Keep.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "PineTrees.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Portal.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Tower.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Winter.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Winter_map.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 469.5,
+                "y": 262
+            }
+        },
+        "Дополнительные объекты.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Пол.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.imagePath": "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/winter_map",
+    "map.height": 20,
+    "map.lastUsedFormat": "tmx",
+    "map.layerDataFormat": null,
+    "map.tileHeight": 64,
+    "map.tileWidth": 64,
+    "map.width": 20,
+    "openFiles": [
+        "Winter_map.tmx",
+        "Keep.tsx",
+        "PineTrees.tsx",
+        "Portal.tsx",
+        "Tower.tsx",
+        "Winter.tsx"
+    ],
+    "project": "winter_map.tiled-project",
+    "recentFiles": [
+        "Winter.tsx",
+        "Tower.tsx",
+        "Portal.tsx",
+        "PineTrees.tsx",
+        "Keep.tsx",
+        "Winter_map.tmx",
+        "Пол.tsx",
+        "Дополнительные объекты.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.margin": 0,
+    "tileset.spacing": 0,
+    "tileset.tileSize": {
+        "height": 32,
+        "width": 32
+    },
+    "tileset.type": 0
+}
