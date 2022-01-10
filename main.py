@@ -194,14 +194,14 @@ class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
 
 
 class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
-    def __init__(self, pos, level, sheet, columns, rows):
+    def __init__(self, pos, level, sheet, size):
         super(Enemy, self).__init__(enemy_group, all_sprites)
         self.pos_x, self.pos_y = pos
         self.level = level
         self.delay = 200
         pygame.time.set_timer(ENEMY_EVENT_TYPE, self.delay)
         self.frames = []
-        self.cut_sheet(sheet, columns, rows)
+        self.cut_sheet(sheet, size[0], size[1])
         self.cur_frame = 0
         self.image = self.frames[self.cur_frame]
 
@@ -466,6 +466,20 @@ def start_level_random():  # функция level_random
     start_game(current_level)
 
 
+game_base = {'winter_map': {'player': Player('mario.png', (10, 16)),
+                            'level': Level('winter_map', [27, 30, 59, 44], 44),
+                            'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)],
+                            'enemy_image': load_image('winter_map\Yeti.png'),
+                            'enemy_size': (6, 8)},
+
+             'desert_map': {'player': Player('mario.png', (4, 2)),
+                            'level': Level('desert_map', [27, 30, 59, 44], 44),
+                            'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)],
+                            'enemy_image': load_image('desert_map\Gangblanc.png'),
+                            'enemy_size': (8, 8)}}
+
+
+
 def start_game(name_level):
     global number_of_cells, screen_rect, number_of_lives, vol, flPause, amount_of_animation
     global all_sprites, player_group, enemy_group, collectible_group, asterisks
@@ -480,11 +494,11 @@ def start_game(name_level):
     asterisks = pygame.sprite.Group()
     number_of_cells = 12
 
-    level = Level(f'winter_map', [27, 30, 59, 44], 44)
-    player = Player('mario.png', (10, 16))
+    level = game_base[name_level]['level']
+    player = game_base[name_level]['player']
     enemies = []
-    for i in (1, 1), (18, 1), (1, 18), (18, 18):
-        enemies.append(Enemy(i, level, enemy_image, 6, 8))
+    for i in game_base[name_level]['enemies_list']:
+        enemies.append(Enemy(i, level, game_base[name_level]['enemy_image'], game_base[name_level]['enemy_size']))
     game = Game(level, player, enemies)
 
     back_button = Button(75, 50, (190, 233, 221), (180, 255, 235))
@@ -571,13 +585,11 @@ def start_game(name_level):
         back_button.draw(10, 605, '<--', show_menu, 40)
         pygame.draw.rect(screen, (180, 255, 235), (9, 604, 77, 52), 3)
 
-
         clock.tick(60)
         pygame.display.flip()
 
 
 player_image = load_image('mario.png')
-enemy_image = load_image('winter_map\Yeti.png')
 star_image = load_image('star.png')
 
 if __name__ == '__main__':

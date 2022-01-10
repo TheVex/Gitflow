@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="left-up" width="20" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="1">
+ <tileset firstgid="1" source="Beach Tileset.tsx"/>
+ <tileset firstgid="163" source="../winter_map/Portal.tsx"/>
+ <tileset firstgid="167" source="PineTrees.tsx"/>
+ <tileset firstgid="170" source="Cactus.tsx"/>
+ <layer id="1" name="Слой тайлов 1" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxrZGBgaARiLyD2huIAIA4kEzcOcvPUoJha5lkAsSUQ+1HJPGRzqGEezAw7ILaH4hAqmEeJm5AxNdw0FLEjECdjwU5kmheEQzyJTHNxmQfDpMY/yDwfBkheJsY8FyB2xYKJcR8oraOnpzAgDseCiTEPm18JmRfMgEjb6BhbWkc3TxPNPFIxrc2DYQCw3H5P
+  </data>
+ </layer>
+ <layer id="2" name="Слой тайлов 2" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJylVNFpw1AMVMCQAZqv0gmSBVrSBRJaT9Du4kBmKcZ2/F43rB7VkbMim5IeHHbsl9Od9J4b+UVSdspeefnHfaN8Um6UuwVmqztSfUZlug09y7Y+k8ZI1wgjaRePZ+VKubYac/6ARNckU589+YCHra3h5/DLXirnOVneb/KV3HWkd0s5k63rjNxz6EAX/RPy6gHdnjL7WUKPe+o1/IwuRp7llvR27h3gPWIuPm/kE9qsk0kHqCgv4PfcX4C5ZMrLiPYca6NWpvUFpU/IC+yVn8RXyxGBs6O3Pu+b8kT8IF2R+Mxlqom8qPWgfCS9g/JZWS94Ygwyzev9Fb1j8D+gJeJ3yYs99658caydBp/11rKCrdzOdw5Rvkivk+mZj84+fFV0D0DrS6557/m+DzLtH/gDvTyB/Q==
+  </data>
+ </layer>
+</map>
