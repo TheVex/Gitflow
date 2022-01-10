@@ -13,7 +13,7 @@ collectible_group = pygame.sprite.Group()
 asterisks = pygame.sprite.Group()
 
 clock = pygame.time.Clock()
-size = width, height = 600, 650
+size = width, height = 640, 704
 screen = pygame.display.set_mode(size)
 GRAVITY = 1.5
 ENEMY_EVENT_TYPE = 30
@@ -137,8 +137,11 @@ class Level:  # Класс игрового поля
                 image1 = self.tile_map.get_tile_image(x, y, 0)
                 screen.blit(image1, (x * self.tile_size, y * self.tile_size))
 
-                image2 = self.tile_map.get_tile_image(x, y, 1)
-                screen.blit(image2, (x * self.tile_size, y * self.tile_size))
+                try:
+                    image2 = self.tile_map.get_tile_image(x, y, 1)
+                    screen.blit(image2, (x * self.tile_size, y * self.tile_size))
+                except TypeError:
+                    pass
 
     def find_path_step(self, start, target):
         INF = 1000
@@ -256,11 +259,11 @@ class Game:
         next_x, next_y = self.player.get_pos()
         if pygame.key.get_pressed()[pygame.K_LEFT]:
             next_x -= 1
-        if pygame.key.get_pressed()[pygame.K_UP]:
+        elif pygame.key.get_pressed()[pygame.K_UP]:
             next_y -= 1
-        if pygame.key.get_pressed()[pygame.K_RIGHT]:
+        elif pygame.key.get_pressed()[pygame.K_RIGHT]:
             next_x += 1
-        if pygame.key.get_pressed()[pygame.K_DOWN]:
+        elif pygame.key.get_pressed()[pygame.K_DOWN]:
             next_y += 1
         if self.level.is_free((next_x, next_y)):
             self.player.set_pos((next_x, next_y))
@@ -277,6 +280,11 @@ class Game:
 
     def move_enemy(self, enemy):
         next_position = self.level.find_path_step(enemy.get_pos(), self.player.get_pos())
+        for i in self.enemy_list:
+            t_pos = i.get_pos()
+            print(t_pos, next_position)
+            if t_pos == next_position:
+                return
         enemy.pos_x, enemy.pos_y = next_position
 
 
@@ -462,8 +470,7 @@ def start_game(name_level):
     global number_of_cells, screen_rect, number_of_lives, vol, flPause, amount_of_animation
     global all_sprites, player_group, enemy_group, collectible_group, asterisks
 
-    size = width, height = 640, 640
-    screen = pygame.display.set_mode(size)
+
 
     amount_of_animation = 100  # количество прокруток анимации победы
     all_sprites = pygame.sprite.Group()
@@ -473,10 +480,10 @@ def start_game(name_level):
     asterisks = pygame.sprite.Group()
     number_of_cells = 12
 
-    level = Level(f'winter_map', [27, 30, 44], 44)
+    level = Level(f'winter_map', [27, 30, 59, 44], 44)
     player = Player('mario.png', (10, 16))
     enemies = []
-    for i in (1, 1), (18, 1), (1, 18), (18, 18), (5, 10), (10, 5):
+    for i in (1, 1), (18, 1), (1, 18), (18, 18):
         enemies.append(Enemy(i, level, enemy_image, 6, 8))
     game = Game(level, player, enemies)
 

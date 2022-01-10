@@ -5,6 +5,7 @@
  <tileset firstgid="43" source="Portal.tsx"/>
  <tileset firstgid="47" source="PineTrees.tsx"/>
  <tileset firstgid="50" source="Winter.tsx"/>
+ <tileset firstgid="58" source="present.tsx"/>
  <layer id="1" name="Слой тайлов 1" width="20" height="20">
   <data encoding="base64" compression="zlib">
    eJwzY2BgMBvFVMWyg8ANo3gUj+JRTGsMAO9dVEg=
@@ -12,7 +13,7 @@
  </layer>
  <layer id="3" name="Слой тайлов 2" width="20" height="20">
   <data encoding="base64" compression="zlib">
-   eJy1VMsKgCAQ9AfqUrewhC4RXfz/n8tgF4aYLRf0MCDrOPsYNYcQcmOsjYB6e8EGiBKPwMcYcneil4ycyVgzjqUXK/QYp2d9mu+QmZwfem9OJHoWmB81/mpOzbvI+Wf/EmSJLYRfU1+S/aFglLU1Q4/eVDA79HC+2ifqIVSP+fdXH87oPSuvH39vlfnX8z9off88PVu8nv2yXryx1v/8gxvqFzZH
+   eJy1k00KxCAMhXOBmU27C9KAmzLMxvXc/161EOFhk1o7dfGBjc+XH20iovQwnPn9CYPf/h0zCxA0HuAMxlAbNY5+4uQVZ21pPL9wwc/SjKyv5Ft1Jp8Tv1oTDD8P6z480K/krPPu+18lGX2gvlWf6P4r89a1N8Mevykzd/h58xU6/ktSafBsqz6cUT2rO/dxxp376GXk+2v1zBd0o/plp5eeGNPxbT3BBlx1TmU=
   </data>
  </layer>
 </map>

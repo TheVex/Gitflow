@@ -14,18 +14,22 @@
             "scaleInEditor": 1
         },
         "PineTrees.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "Portal.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "Tower.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "Winter.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
@@ -33,9 +37,19 @@
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 469.5,
-                "y": 262
+                "x": 354.5,
+                "y": 555
             }
+        },
+        "present.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "present2.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "Дополнительные объекты.tsx": {
             "dynamicWrapping": true,
@@ -65,12 +79,14 @@
     ],
     "project": "winter_map.tiled-project",
     "recentFiles": [
+        "Winter_map.tmx",
+        "present.tsx",
+        "present2.tsx",
         "Winter.tsx",
         "Tower.tsx",
         "Portal.tsx",
         "PineTrees.tsx",
         "Keep.tsx",
-        "Winter_map.tmx",
         "Пол.tsx",
         "Дополнительные объекты.tsx"
     ],
