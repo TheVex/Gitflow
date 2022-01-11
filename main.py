@@ -16,7 +16,7 @@ clock = pygame.time.Clock()
 size = width, height = 640, 704
 screen = pygame.display.set_mode(size)
 GRAVITY = 1.5
-ENEMY_EVENT_TYPE = 30
+ENEMY_EVENT_TYPE = 100
 
 fullname1 = os.path.join('data', 'музыка1.mp3')
 pygame.mixer.music.load(fullname1)
@@ -120,7 +120,7 @@ def print_text(message, x, y, font_colour=(20, 20, 20), font_type='PingPong.ttf'
 
 
 class Level:  # Класс игрового поля
-    def __init__(self, name, free_tiles, finish_tile):  # создание поля
+    def __init__(self, name, free_tiles, finish_tile, collectible_tile):  # создание поля
         self.name = name
         self.free_tiles = free_tiles
         self.finish_tile = finish_tile
@@ -129,17 +129,31 @@ class Level:  # Класс игрового поля
         self.tile_map = pytmx.load_pygame(filename)
         self.height = self.tile_map.height
         self.width = self.tile_map.width
+        self.collectible_tile = collectible_tile
         self.tile_size = self.tile_map.tilewidth
+
+        self.collectible_list = []
+        for y in range(self.height):
+            for x in range(self.width):
+                image = self.tile_map.get_tile_image(x, y, 1)
+                if self.get_tile_id((x, y)) == collectible_tile:
+                    self.collectible_list.append(Collectible((x, y), image))
 
     def render(self):  # Прорисовка поля
         for y in range(self.height):
             for x in range(self.width):
+                flag = False
+
                 image1 = self.tile_map.get_tile_image(x, y, 0)
                 screen.blit(image1, (x * self.tile_size, y * self.tile_size))
 
                 try:
                     image2 = self.tile_map.get_tile_image(x, y, 1)
-                    screen.blit(image2, (x * self.tile_size, y * self.tile_size))
+                    for i in self.collectible_list:
+                        if i.get_pos() == (x, y):
+                            flag = True
+                    if flag or self.get_tile_id((x, y)) != self.collectible_tile:
+                        screen.blit(image2, (x * self.tile_size, y * self.tile_size))
                 except TypeError:
                     pass
 
@@ -167,9 +181,10 @@ class Level:  # Класс игрового поля
         return x, y
 
     def get_tile_id(self, position):
-        print(self.tile_map.tiledgidmap[self.tile_map.get_tile_gid(*position, 1)])
-
-        return self.tile_map.tiledgidmap[self.tile_map.get_tile_gid(*position, 1)]
+        try:
+            return self.tile_map.tiledgidmap[self.tile_map.get_tile_gid(*position, 1)]
+        except KeyError:
+            return 0
 
     def is_free(self, position):
         return self.get_tile_id(position) in self.free_tiles
@@ -180,7 +195,6 @@ class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
         super(Player, self).__init__(player_group, all_sprites)
         self.pos_x, self.pos_y = position
         self.image = load_image(name)
-        self.update()
 
     def get_pos(self):
         return self.pos_x, self.pos_y
@@ -198,7 +212,7 @@ class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
         super(Enemy, self).__init__(enemy_group, all_sprites)
         self.pos_x, self.pos_y = pos
         self.level = level
-        self.delay = 200
+        self.delay = 300
         pygame.time.set_timer(ENEMY_EVENT_TYPE, self.delay)
         self.frames = []
         self.cut_sheet(sheet, size[0], size[1])
@@ -230,17 +244,17 @@ class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
 
 
 class Collectible(pygame.sprite.Sprite):  # Класс собираемых объектов (пока не знаю каких, Даша - решай)
-    def __init__(self, pos_x, pos_y, level):
+    def __init__(self, pos, image):
         super(Collectible, self).__init__(collectible_group, all_sprites)
-        self.pos_x = pos_x
-        self.pos_y = pos_y
-        self.image = star_image
-        self.level = level
-        self.update()
+        self.pos_x, self.pos_y = pos
+        self.image = image
 
-    def render(self):
-        self.rect = self.image.get_rect().move(self.level.cell_size * self.pos_y + self.level.cell_size * 0.35,
-                                               self.level.cell_size * self.pos_x + self.level.cell_size * 0.2)
+    def get_pos(self):
+        return self.pos_x, self.pos_y
+
+    def render(self, level):
+        self.rect = self.image.get_rect().move(level.cell_size * self.pos_y + level.cell_size * 0.35,
+                                               level.cell_size * self.pos_x + level.cell_size * 0.2)
 
 
 class Game:
@@ -248,6 +262,7 @@ class Game:
         self.level = level
         self.player = player
         self.enemy_list = enemy_list
+
 
     def render(self):
         self.level.render()
@@ -265,6 +280,7 @@ class Game:
             next_x += 1
         elif pygame.key.get_pressed()[pygame.K_DOWN]:
             next_y += 1
+        print(self.level.get_tile_id((next_x, next_y)))
         if self.level.is_free((next_x, next_y)):
             self.player.set_pos((next_x, next_y))
             self.check_tile()
@@ -282,7 +298,6 @@ class Game:
         next_position = self.level.find_path_step(enemy.get_pos(), self.player.get_pos())
         for i in self.enemy_list:
             t_pos = i.get_pos()
-            print(t_pos, next_position)
             if t_pos == next_position:
                 return
         enemy.pos_x, enemy.pos_y = next_position
@@ -440,40 +455,42 @@ def replay_the_level():  # функция "переиграть"
 def start_level_desert():  # функция level_desert
     global current_level, number_of_lives
     number_of_lives = 3
-    current_level = 'level_Desert'
+    current_level = 'desert_map'
     start_game('desert_map')
 
 
 def start_level_jungle():  # функция level_jungle
     global current_level, number_of_lives
     number_of_lives = 3
-    current_level = 'level_Jungle'
+    current_level = 'jungle_map'
     start_game('jungle_map')
 
 
 def start_level_winter():  # функция level_winter
     global current_level, number_of_lives
     number_of_lives = 3
-    current_level = 'level_Winter'
+    current_level = 'winter_map'
     start_game('winter_map')
 
 
 def start_level_random():  # функция level_random
     global current_level, number_of_lives
     number_of_lives = 3
-    random_level = ['level_Winter', 'level_Jungle', 'level_Desert']
+    random_level = ['winter_map', 'jungle_map', 'desert_map']
     current_level = random.choice(random_level)
     start_game(current_level)
 
 
-game_base = {'winter_map': {'player': Player('mario.png', (10, 16)),
-                            'level': Level('winter_map', [27, 30, 59, 44], 44),
+game_base = {'winter_map': {'player': (10, 16),
+                            'player_image': 'mario.png',
+                            'level': Level('winter_map', [27, 30, 59, 44], 44, 59),
                             'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)],
                             'enemy_image': load_image('winter_map\Yeti.png'),
                             'enemy_size': (6, 8)},
 
-             'desert_map': {'player': Player('mario.png', (4, 2)),
-                            'level': Level('desert_map', [27, 30, 59, 44], 44),
+             'desert_map': {'player': (4, 1),
+                            'player_image': 'mario.png',
+                            'level': Level('desert_map', [43, 20, 0, 42, 44], 44, 59),
                             'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)],
                             'enemy_image': load_image('desert_map\Gangblanc.png'),
                             'enemy_size': (8, 8)}}
@@ -495,7 +512,7 @@ def start_game(name_level):
     number_of_cells = 12
 
     level = game_base[name_level]['level']
-    player = game_base[name_level]['player']
+    player = Player(game_base[name_level]['player_image'], game_base[name_level]['player'])
     enemies = []
     for i in game_base[name_level]['enemies_list']:
         enemies.append(Enemy(i, level, game_base[name_level]['enemy_image'], game_base[name_level]['enemy_size']))
