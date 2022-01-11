@@ -28,8 +28,6 @@ pygame.mixer.music.set_volume(vol)
 flPause = False  # флаг включена/выключена музыка
 
 
-
-
 def load_image(name, colorkey=None):  # Функция для загрузки картинок
     fn = os.path.join('data', name)
     # если файл не существует, то выходим
@@ -47,10 +45,11 @@ def load_image(name, colorkey=None):  # Функция для загрузки �
         image = image.convert_alpha()
     return image
 
+
 fullname = os.path.join('Общие картинки', 'Меню71.png')
 fullname = os.path.join('Картинки', fullname)
 
-all_sprites_menu = pygame.sprite.Group()  #ДАША ДАША
+all_sprites_menu = pygame.sprite.Group()
 sprite = pygame.sprite.Sprite()
 image = load_image(fullname, -1)
 sprite.image = pygame.transform.scale(image, (45, 45))
@@ -58,6 +57,7 @@ sprite.rect = sprite.image.get_rect()
 all_sprites_menu.add(sprite)
 sprite.rect.x = 12
 sprite.rect.y = 645
+
 
 def create_particles(position):
     particle_count = 20  # количество создаваемых частиц
@@ -139,7 +139,7 @@ def show_menu():  # окно меню
         clock.tick(60)
 
 
-def play(): #ДАША ДАША
+def play():
     global menu_bckgr, flPause, vol
     fullname = os.path.join('Общие картинки', 'Фон1.jpg')  # подключение фона
     fullname = os.path.join('Картинки', fullname)
@@ -209,7 +209,7 @@ def play(): #ДАША ДАША
         screen.blit(text, text_rect)
         pygame.draw.rect(screen, (180, 255, 235), (70, 100, 500, 2), 0)
 
-        menu_button.draw(10, 645, '', show_menu, 40)  # ДАША ДАША
+        menu_button.draw(10, 645, '', show_menu, 40)
         pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
 
         start_button.draw(70, 150, '', start_level_desert, 30)  # Прорисовка кнопок уровней
@@ -651,7 +651,7 @@ def start_game(name_level):
         enemies.append(Enemy(i, level, game_base[name_level]['enemy_image'], game_base[name_level]['enemy_size']))
     game = Game(level, player, enemies)
 
-    menu_button = Button(50, 45, (190, 233, 221), (180, 255, 235))  #ДАША ДАША
+    menu_button = Button(50, 45, (190, 233, 221), (180, 255, 235))
 
     fullname = os.path.join('Общие картинки', 'Жизнь.png')
     fullname = os.path.join('Картинки', fullname)
@@ -733,7 +733,7 @@ def start_game(name_level):
         else:
             all_sprites_life1.draw(screen)
 
-        menu_button.draw(10, 645, '', show_menu, 40) #ДАША ДАША
+        menu_button.draw(10, 645, '', show_menu, 40)
         pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
 
         all_sprites_menu.draw(screen)
