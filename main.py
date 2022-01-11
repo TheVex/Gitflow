@@ -28,6 +28,8 @@ pygame.mixer.music.set_volume(vol)
 flPause = False  # флаг включена/выключена музыка
 
 
+
+
 def load_image(name, colorkey=None):  # Функция для загрузки картинок
     fn = os.path.join('data', name)
     # если файл не существует, то выходим
@@ -36,6 +38,7 @@ def load_image(name, colorkey=None):  # Функция для загрузки �
         sys.exit()
     image = pygame.image.load(fn)
     if colorkey is not None:
+        print(55)
         image = image.convert()
         if colorkey == -1:
             colorkey = image.get_at((0, 0))
@@ -44,6 +47,17 @@ def load_image(name, colorkey=None):  # Функция для загрузки �
         image = image.convert_alpha()
     return image
 
+fullname = os.path.join('Общие картинки', 'Меню71.png')
+fullname = os.path.join('Картинки', fullname)
+
+all_sprites_menu = pygame.sprite.Group()  #ДАША ДАША
+sprite = pygame.sprite.Sprite()
+image = load_image(fullname, -1)
+sprite.image = pygame.transform.scale(image, (45, 45))
+sprite.rect = sprite.image.get_rect()
+all_sprites_menu.add(sprite)
+sprite.rect.x = 12
+sprite.rect.y = 645
 
 def create_particles(position):
     particle_count = 20  # количество создаваемых частиц
@@ -63,12 +77,11 @@ def show_menu():  # окно меню
     fullname = os.path.join('Картинки', fullname)
     fullname = os.path.join('data', fullname)
     menu_bckgr = pygame.image.load(fullname)
-    start_desert_button = Button(200, 50, (190, 233, 221), (180, 255, 235))  # создание кнопок
-    start_jungle_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
-    start_winter_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
-    start_random_button = Button(200, 50, (190, 233, 221), (180, 255, 235))
-    rules_of_the_game_button = Button(345, 57, (190, 233, 221), (180, 255, 235))
-    quit_button = Button(100, 60, (190, 233, 221), (180, 255, 235))
+
+    play_game_button = Button(250, 60, (190, 233, 221), (180, 255, 235))
+    records_button = Button(250, 60, (190, 233, 221), (180, 255, 235))
+    rules_of_the_game_button = Button(250, 60, (190, 233, 221), (180, 255, 235))
+    quit_button = Button(250, 60, (190, 233, 221), (180, 255, 235))
     show = True
     while show:
         for event in pygame.event.get():
@@ -89,25 +102,147 @@ def show_menu():  # окно меню
                     vol += 0.1
                     pygame.mixer.music.set_volume(vol)
         screen.blit(menu_bckgr, (0, 0))
-        pygame.draw.rect(screen, (180, 255, 235), (150, 174, 300, 2), 0)
-
-        font = pygame.font.Font(None, 75)  # Надпись 'Start game'
-        text = font.render('Start game', True, (16, 17, 18))
-        text_rect = text.get_rect(center=(300, 155))
+        font = pygame.font.Font(None, 110)  # Надпись 'Выберите уровень'
+        text = font.render('Run or die', True, (0, 0, 0))
+        text_rect = text.get_rect(center=(320, 200))
         screen.blit(text, text_rect)
 
-        start_desert_button.draw(200, 200, 'level "Desert"', start_level_desert, 30)  # Прорисовка кнопок
-        pygame.draw.rect(screen, (180, 255, 235), (199, 199, 202, 52), 3)
-        start_jungle_button.draw(200, 270, 'level "Jungle"', start_level_jungle, 30)
-        pygame.draw.rect(screen, (180, 255, 235), (199, 269, 202, 52), 3)
-        start_winter_button.draw(200, 340, 'level "Winter"', start_level_winter, 30)
-        pygame.draw.rect(screen, (180, 255, 235), (199, 339, 202, 52), 3)
-        start_random_button.draw(200, 410, 'random level', start_level_random, 30)
-        pygame.draw.rect(screen, (180, 255, 235), (199, 409, 202, 52), 3)
-        rules_of_the_game_button.draw(140, 500, 'Rules of the game', rule_window, 38)
-        pygame.draw.rect(screen, (180, 255, 235), (139, 499, 347, 59), 3)
-        quit_button.draw(250, 570, 'Quit', terminate, 40)
-        pygame.draw.rect(screen, (180, 255, 235), (249, 569, 102, 62), 3)
+        play_game_button.draw(200, 300, '', play, 38)
+        pygame.draw.rect(screen, (180, 255, 235), (199, 299, 252, 62), 3)
+        font_type = os.path.join('data', 'PingPong.ttf')
+        font_type = pygame.font.Font(font_type, 40)
+        text = font_type.render('Play', True, (20, 20, 20))
+        screen.blit(text, text.get_rect(center=(325, 330)))
+
+        records_button.draw(200, 380, '', play, 38)
+        pygame.draw.rect(screen, (180, 255, 235), (199, 379, 252, 62), 3)
+        font_type = os.path.join('data', 'PingPong.ttf')
+        font_type = pygame.font.Font(font_type, 40)
+        text = font_type.render('Records', True, (20, 20, 20))
+        screen.blit(text, text.get_rect(center=(325, 410)))
+
+        rules_of_the_game_button.draw(200, 460, '', rule_window, 38)
+        pygame.draw.rect(screen, (180, 255, 235), (199, 459, 252, 62), 3)
+        font_type = os.path.join('data', 'PingPong.ttf')
+        font_type = pygame.font.Font(font_type, 40)
+        text = font_type.render('Rules', True, (20, 20, 20))
+        screen.blit(text, text.get_rect(center=(325, 490)))
+
+        quit_button.draw(200, 540, '', terminate, 38)
+        pygame.draw.rect(screen, (180, 255, 235), (199, 539, 252, 62), 3)
+        font_type = os.path.join('data', 'PingPong.ttf')
+        font_type = pygame.font.Font(font_type, 40)
+        text = font_type.render('Exit', True, (20, 20, 20))
+        screen.blit(text, text.get_rect(center=(325, 570)))
+
+        pygame.display.update()
+        clock.tick(60)
+
+
+def play(): #ДАША ДАША
+    global menu_bckgr, flPause, vol
+    fullname = os.path.join('Общие картинки', 'Фон1.jpg')  # подключение фона
+    fullname = os.path.join('Картинки', fullname)
+    fullname = os.path.join('data', fullname)
+    menu_bckgr = pygame.image.load(fullname)
+
+    menu_button = Button(50, 45, (190, 233, 221), (180, 255, 235))
+    start_button = Button(200, 200, (190, 233, 221), (180, 255, 235))  # создание кнопок уровней
+
+    all_sprites_button = pygame.sprite.Group()
+
+    fullname = os.path.join('Пустыня', 'Верблюд.png')
+    fullname = os.path.join('Картинки', fullname)
+    sprite = pygame.sprite.Sprite()
+    image = load_image(fullname)
+    sprite.image = pygame.transform.scale(image, (150, 150))
+    sprite.rect = sprite.image.get_rect()
+    all_sprites_button.add(sprite)
+    sprite.rect.x = 85
+    sprite.rect.y = 170
+
+    fullname = os.path.join('Зима', 'Снеговик1.jpg')
+    fullname = os.path.join('Картинки', fullname)
+    sprite = pygame.sprite.Sprite()
+    image = load_image(fullname)
+    sprite.image = pygame.transform.scale(image, (140, 140))
+    sprite.rect = sprite.image.get_rect()
+    all_sprites_button.add(sprite)
+    sprite.rect.x = 100
+    sprite.rect.y = 420
+
+    fullname = os.path.join('Общие картинки', 'вопрос.jpg')
+    fullname = os.path.join('Картинки', fullname)
+    sprite = pygame.sprite.Sprite()
+    image = load_image(fullname, -1)
+    sprite.image = pygame.transform.scale(image, (140, 140))
+    sprite.rect = sprite.image.get_rect()
+    all_sprites_button.add(sprite)
+    sprite.rect.x = 400
+    sprite.rect.y = 420
+
+    show = True
+    while show:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:  # остановка музыки
+                    flPause = not flPause
+                    if flPause:
+                        pygame.mixer.music.pause()
+                    else:
+                        pygame.mixer.music.unpause()
+
+                elif event.key == pygame.K_a:  # изменение громкости звука
+                    vol -= 0.1
+                    pygame.mixer.music.set_volume(vol)
+                elif event.key == pygame.K_d:
+                    vol += 0.1
+                    pygame.mixer.music.set_volume(vol)
+
+        screen.blit(menu_bckgr, (0, 0))
+
+        font = pygame.font.Font(None, 70)  # Надпись 'Выберите уровень'
+        text = font.render('Выберите уровень', True, (16, 17, 18))
+        text_rect = text.get_rect(center=(320, 70))
+        screen.blit(text, text_rect)
+        pygame.draw.rect(screen, (180, 255, 235), (70, 100, 500, 2), 0)
+
+        menu_button.draw(10, 645, '', show_menu, 40)  # ДАША ДАША
+        pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
+
+        start_button.draw(70, 150, '', start_level_desert, 30)  # Прорисовка кнопок уровней
+        pygame.draw.rect(screen, (180, 255, 235), (69, 149, 202, 202), 3)
+        font = pygame.font.Font(None, 30)
+        text = font.render('level "Desert"', True, (16, 17, 18))
+        text_rect = text.get_rect(center=(170, 330))
+        screen.blit(text, text_rect)
+
+        start_button.draw(370, 150, '', start_level_jungle, 30)  # Прорисовка кнопок уровней
+        pygame.draw.rect(screen, (180, 255, 235), (369, 149, 202, 202), 3)
+        font = pygame.font.Font(None, 30)
+        text = font.render('level "Jungle"', True, (16, 17, 18))
+        text_rect = text.get_rect(center=(470, 330))
+        screen.blit(text, text_rect)
+
+        start_button.draw(70, 400, '', start_level_winter, 30)  # Прорисовка кнопок уровней
+        pygame.draw.rect(screen, (180, 255, 235), (69, 399, 202, 202), 3)
+        font = pygame.font.Font(None, 30)
+        text = font.render('level "Winter""', True, (16, 17, 18))
+        text_rect = text.get_rect(center=(170, 580))
+        screen.blit(text, text_rect)
+
+        start_button.draw(370, 400, '', start_level_random, 30)  # Прорисовка кнопок уровней
+        pygame.draw.rect(screen, (180, 255, 235), (369, 399, 202, 202), 3)
+        font = pygame.font.Font(None, 30)
+        text = font.render('random level"', True, (16, 17, 18))
+        text_rect = text.get_rect(center=(470, 580))
+        screen.blit(text, text_rect)
+
+        all_sprites_button.draw(screen)
+        all_sprites_menu.draw(screen)
+
         pygame.display.update()
         clock.tick(60)
 
@@ -133,7 +268,8 @@ class Level:  # Класс игрового поля
         self.tile_size = self.tile_map.tilewidth
 
         self.collectible_list = []
-        for y in range(self.height): # Проверяет, является ли клетка доступной для сбора и добавляет в список предметов для сбора
+        for y in range(
+                self.height):  # Проверяет, является ли клетка доступной для сбора и добавляет в список предметов для сбора
             for x in range(self.width):
                 image = self.tile_map.get_tile_image(x, y, 1)
                 if self.get_tile_id((x, y)) == collectible_tile:
@@ -157,7 +293,7 @@ class Level:  # Класс игрового поля
                 except TypeError:
                     pass
 
-    def find_path_step(self, start, target): # Функция ИИ у противников
+    def find_path_step(self, start, target):  # Функция ИИ у противников
         INF = 1000
         x, y = start
         distance = [[INF] * self.width for _ in range(self.height)]
@@ -180,13 +316,13 @@ class Level:  # Класс игрового поля
             x, y = prev[y][x]
         return x, y
 
-    def get_tile_id(self, position): # Возвращает ID клетки (узнать чем эта клетка является)
+    def get_tile_id(self, position):  # Возвращает ID клетки (узнать чем эта клетка является)
         try:
             return self.tile_map.tiledgidmap[self.tile_map.get_tile_gid(*position, 1)]
         except KeyError:
             return 0
 
-    def is_free(self, position): # Проверяет, свободна ли клетка
+    def is_free(self, position):  # Проверяет, свободна ли клетка
         return self.get_tile_id(position) in self.free_tiles
 
 
@@ -202,14 +338,15 @@ class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
     def set_pos(self, pos):  # Устанавливает координаты игрока
         self.pos_x, self.pos_y = pos
 
-    def render(self, level): # Ставит игрока на поле. Вызывается каждый кадр
+    def render(self, level):  # Ставит игрока на поле. Вызывается каждый кадр
         self.rect = self.image.get_rect().move(level.tile_size * self.pos_x,
                                                level.tile_size * self.pos_y)
 
 
 class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
-    def __init__(self, pos, level, sheet, size): # принимает в себя картинку, состоящую из нескольких картинок для анимации
-        super(Enemy, self).__init__(enemy_group, all_sprites) # и размер, который будет взят для анимирования
+    def __init__(self, pos, level, sheet,
+                 size):  # принимает в себя картинку, состоящую из нескольких картинок для анимации
+        super(Enemy, self).__init__(enemy_group, all_sprites)  # и размер, который будет взят для анимирования
         self.pos_x, self.pos_y = pos
         self.level = level
 
@@ -229,18 +366,18 @@ class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
                 self.frames.append(sheet.subsurface(pygame.Rect(
                     frame_location, self.rect.size)))
 
-    def render(self): # Ставит противника на поле. Вызывается каждый кадр
+    def render(self):  # Ставит противника на поле. Вызывается каждый кадр
         self.rect = self.image.get_rect().move(self.level.tile_size * self.pos_x,
                                                self.level.tile_size * self.pos_y)
 
-    def update_frame(self): # Анимирует противника. Вызывается в определенный промежуток времени
+    def update_frame(self):  # Анимирует противника. Вызывается в определенный промежуток времени
         self.cur_frame = (self.cur_frame + 1) % len(self.frames)
         self.image = self.frames[self.cur_frame]
 
-    def get_pos(self): # Возвращает координаты противника
+    def get_pos(self):  # Возвращает координаты противника
         return self.pos_x, self.pos_y
 
-    def set_pos(self, pos): # Устанавливает координаты противника
+    def set_pos(self, pos):  # Устанавливает координаты противника
         self.pos_x, self.pos_y = pos
 
 
@@ -250,24 +387,24 @@ class Collectible(pygame.sprite.Sprite):  # Класс собираемых об
         self.pos_x, self.pos_y = pos
         self.image = image
 
-    def get_pos(self): # Возвращает координаты предмета
+    def get_pos(self):  # Возвращает координаты предмета
         return self.pos_x, self.pos_y
 
 
-class Game: # Класс, объединяющий уровень, противников, игрока и предметы сбора.
-    def __init__(self, level, player, enemy_list): # Принимает экземпляры классов уровня, игрока и список экземпляров класса противника
+class Game:  # Класс, объединяющий уровень, противников, игрока и предметы сбора.
+    def __init__(self, level, player,
+                 enemy_list):  # Принимает экземпляры классов уровня, игрока и список экземпляров класса противника
         self.level = level
         self.player = player
         self.enemy_list = enemy_list
 
-
-    def render(self): # Общая прорисовка: Вызывает метод render у всех зависимых объектов
+    def render(self):  # Общая прорисовка: Вызывает метод render у всех зависимых объектов
         self.level.render()
         self.player.render(self.level)
         for i in self.enemy_list:
             i.render()
 
-    def move_player(self): # Отвечает за перемещение игрока
+    def move_player(self):  # Отвечает за перемещение игрока
         next_x, next_y = self.player.get_pos()
         if pygame.key.get_pressed()[pygame.K_LEFT]:
             next_x -= 1
@@ -278,11 +415,11 @@ class Game: # Класс, объединяющий уровень, против�
         elif pygame.key.get_pressed()[pygame.K_DOWN]:
             next_y += 1
         print(self.level.get_tile_id((next_x, next_y)))
-        if self.level.is_free((next_x, next_y)): # проверка, может ли игрок наступить на плитку
+        if self.level.is_free((next_x, next_y)):  # проверка, может ли игрок наступить на плитку
             self.player.set_pos((next_x, next_y))
             self.check_tile()
 
-    def check_tile(self): # Функция - попытка реализовать твой код для запуска победы. Требует твоей доработки
+    def check_tile(self):  # Функция - попытка реализовать твой код для запуска победы. Требует твоей доработки
         global amount_of_animation
         if self.level.get_tile_id(self.player.get_pos()) == 44:
             while amount_of_animation != 0:
@@ -291,14 +428,13 @@ class Game: # Класс, объединяющий уровень, против�
                 clock.tick(100)
             win_window()
 
-    def move_enemy(self, enemy): # Отвечает за перемещение противника-преследователя
+    def move_enemy(self, enemy):  # Отвечает за перемещение противника-преследователя
         next_position = self.level.find_path_step(enemy.get_pos(), self.player.get_pos())
         for i in self.enemy_list:
             t_pos = i.get_pos()
             if t_pos == next_position:
                 return
         enemy.pos_x, enemy.pos_y = next_position
-
 
 
 class Particle(pygame.sprite.Sprite):
@@ -477,13 +613,16 @@ def start_level_random():  # функция level_random
     current_level = random.choice(random_level)
     start_game(current_level)
 
-# ДАША - это словарь который присоединяет все объекты в игре к своим уровням
-game_base = {'winter_map': {'player': (10, 16), # Координаты игрока
-                            'player_image': 'mario.png', # Картинка игрока
-                            'level': Level('winter_map', [27, 30, 59, 44], 44, 59), # Экземпляр класса уровня
-                            'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)], # Список координат появления противников
-                            'enemy_image': load_image('winter_map\Yeti.png'), # Картинка противника
-                            'enemy_size': (6, 8)}, # Количество картинок внутри картинки противника по горизонтали и вертикали
+
+#    - это словарь который присоединяет все объекты в игре к своим уровням
+game_base = {'winter_map': {'player': (10, 16),  # Координаты игрока
+                            'player_image': 'mario.png',  # Картинка игрока
+                            'level': Level('winter_map', [27, 30, 59, 44], 44, 59),  # Экземпляр класса уровня
+                            'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)],
+                            # Список координат появления противников
+                            'enemy_image': load_image('winter_map\Yeti.png'),  # Картинка противника
+                            'enemy_size': (6, 8)},
+             # Количество картинок внутри картинки противника по горизонтали и вертикали
 
              'desert_map': {'player': (4, 1),
                             'player_image': 'mario.png',
@@ -491,7 +630,6 @@ game_base = {'winter_map': {'player': (10, 16), # Координаты игро�
                             'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)],
                             'enemy_image': load_image('desert_map\Gangblanc.png'),
                             'enemy_size': (8, 8)}}
-
 
 
 def start_game(name_level):
@@ -513,7 +651,7 @@ def start_game(name_level):
         enemies.append(Enemy(i, level, game_base[name_level]['enemy_image'], game_base[name_level]['enemy_size']))
     game = Game(level, player, enemies)
 
-    back_button = Button(75, 50, (190, 233, 221), (180, 255, 235))
+    menu_button = Button(50, 45, (190, 233, 221), (180, 255, 235))  #ДАША ДАША
 
     fullname = os.path.join('Общие картинки', 'Жизнь.png')
     fullname = os.path.join('Картинки', fullname)
@@ -521,29 +659,29 @@ def start_game(name_level):
     all_sprites_life1 = pygame.sprite.Group()
     sprite = pygame.sprite.Sprite()
     image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (50, 50))
+    sprite.image = pygame.transform.scale(image, (45, 45))
     sprite.rect = sprite.image.get_rect()
     all_sprites_life1.add(sprite)
-    sprite.rect.x = 540
-    sprite.rect.y = 605
+    sprite.rect.x = 590
+    sprite.rect.y = 645
 
     all_sprites_life2 = pygame.sprite.Group()
     sprite = pygame.sprite.Sprite()
     image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (50, 50))
+    sprite.image = pygame.transform.scale(image, (45, 45))
     sprite.rect = sprite.image.get_rect()
     all_sprites_life2.add(sprite)
-    sprite.rect.x = 485
-    sprite.rect.y = 605
+    sprite.rect.x = 540
+    sprite.rect.y = 645
 
     all_sprites_life3 = pygame.sprite.Group()
     sprite = pygame.sprite.Sprite()
     image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (50, 50))
+    sprite.image = pygame.transform.scale(image, (45, 45))
     sprite.rect = sprite.image.get_rect()
     all_sprites_life3.add(sprite)
-    sprite.rect.x = 430
-    sprite.rect.y = 605
+    sprite.rect.x = 490
+    sprite.rect.y = 645
 
     screen_rect = (0, 0, width, height)
 
@@ -577,6 +715,7 @@ def start_game(name_level):
                     vol += 0.1
                     pygame.mixer.music.set_volume(vol)
 
+        screen.blit(menu_bckgr, (0, 0))
 
         game.render()
         all_sprites.draw(screen)
@@ -594,8 +733,10 @@ def start_game(name_level):
         else:
             all_sprites_life1.draw(screen)
 
-        back_button.draw(10, 605, '<--', show_menu, 40)
-        pygame.draw.rect(screen, (180, 255, 235), (9, 604, 77, 52), 3)
+        menu_button.draw(10, 645, '', show_menu, 40) #ДАША ДАША
+        pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
+
+        all_sprites_menu.draw(screen)
 
         clock.tick(60)
         pygame.display.flip()
