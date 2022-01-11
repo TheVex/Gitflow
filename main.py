@@ -212,7 +212,6 @@ class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
         super(Enemy, self).__init__(enemy_group, all_sprites) # и размер, который будет взят для анимирования
         self.pos_x, self.pos_y = pos
         self.level = level
-        sheet = load_image(sheet)
 
         self.delay = 300
         pygame.time.set_timer(ENEMY_EVENT_TYPE, self.delay)
@@ -483,7 +482,7 @@ game_base = {'winter_map': {'player': (10, 16), # Координаты игро�
                             'player_image': 'mario.png', # Картинка игрока
                             'level': Level('winter_map', [27, 30, 59, 44], 44, 59), # Экземпляр класса уровня
                             'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)], # Список координат появления противников
-                            'enemy_image': 'winter_map\Yeti.png', # Картинка противника
+                            'enemy_image': load_image('winter_map\Yeti.png'), # Картинка противника
                             'enemy_size': (6, 8)}, # Количество картинок внутри картинки противника по горизонтали и вертикали
 
              'desert_map': {'player': (4, 1),
