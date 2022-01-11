@@ -57,7 +57,7 @@ def terminate():  # Завершает работу
     sys.exit()
 
 
-def show_menu():  # окнj меню
+def show_menu():  # окно меню
     global menu_bckgr, flPause, vol
     fullname = os.path.join('Общие картинки', 'Фон1.jpg')  # подключение фона
     fullname = os.path.join('Картинки', fullname)
@@ -133,13 +133,13 @@ class Level:  # Класс игрового поля
         self.tile_size = self.tile_map.tilewidth
 
         self.collectible_list = []
-        for y in range(self.height):
+        for y in range(self.height): # Проверяет, является ли клетка доступной для сбора и добавляет в список предметов для сбора
             for x in range(self.width):
                 image = self.tile_map.get_tile_image(x, y, 1)
                 if self.get_tile_id((x, y)) == collectible_tile:
                     self.collectible_list.append(Collectible((x, y), image))
 
-    def render(self):  # Прорисовка поля
+    def render(self):  # Прорисовка поля, а также предметов сбора, если они собраны (сбор не реализован)
         for y in range(self.height):
             for x in range(self.width):
                 flag = False
@@ -157,7 +157,7 @@ class Level:  # Класс игрового поля
                 except TypeError:
                     pass
 
-    def find_path_step(self, start, target):
+    def find_path_step(self, start, target): # Функция ИИ у противников
         INF = 1000
         x, y = start
         distance = [[INF] * self.width for _ in range(self.height)]
@@ -180,13 +180,13 @@ class Level:  # Класс игрового поля
             x, y = prev[y][x]
         return x, y
 
-    def get_tile_id(self, position):
+    def get_tile_id(self, position): # Возвращает ID клетки (узнать чем эта клетка является)
         try:
             return self.tile_map.tiledgidmap[self.tile_map.get_tile_gid(*position, 1)]
         except KeyError:
             return 0
 
-    def is_free(self, position):
+    def is_free(self, position): # Проверяет, свободна ли клетка
         return self.get_tile_id(position) in self.free_tiles
 
 
@@ -196,22 +196,24 @@ class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
         self.pos_x, self.pos_y = position
         self.image = load_image(name)
 
-    def get_pos(self):
+    def get_pos(self):  # Возвращает координаты игрока
         return self.pos_x, self.pos_y
 
-    def set_pos(self, pos):
+    def set_pos(self, pos):  # Устанавливает координаты игрока
         self.pos_x, self.pos_y = pos
 
-    def render(self, level):
+    def render(self, level): # Ставит игрока на поле. Вызывается каждый кадр
         self.rect = self.image.get_rect().move(level.tile_size * self.pos_x,
                                                level.tile_size * self.pos_y)
 
 
 class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
-    def __init__(self, pos, level, sheet, size):
-        super(Enemy, self).__init__(enemy_group, all_sprites)
+    def __init__(self, pos, level, sheet, size): # принимает в себя картинку, состоящую из нескольких картинок для анимации
+        super(Enemy, self).__init__(enemy_group, all_sprites) # и размер, который будет взят для анимирования
         self.pos_x, self.pos_y = pos
         self.level = level
+        sheet = load_image(sheet)
+
         self.delay = 300
         pygame.time.set_timer(ENEMY_EVENT_TYPE, self.delay)
         self.frames = []
@@ -219,7 +221,7 @@ class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
         self.cur_frame = 0
         self.image = self.frames[self.cur_frame]
 
-    def cut_sheet(self, sheet, columns, rows):
+    def cut_sheet(self, sheet, columns, rows):  # Создаёт список кадров для анимации
         self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
                                 sheet.get_height() // rows)
         for j in range(1):
@@ -228,49 +230,45 @@ class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
                 self.frames.append(sheet.subsurface(pygame.Rect(
                     frame_location, self.rect.size)))
 
-    def render(self):
+    def render(self): # Ставит противника на поле. Вызывается каждый кадр
         self.rect = self.image.get_rect().move(self.level.tile_size * self.pos_x,
                                                self.level.tile_size * self.pos_y)
 
-    def update_frame(self):
+    def update_frame(self): # Анимирует противника. Вызывается в определенный промежуток времени
         self.cur_frame = (self.cur_frame + 1) % len(self.frames)
         self.image = self.frames[self.cur_frame]
 
-    def get_pos(self):
+    def get_pos(self): # Возвращает координаты противника
         return self.pos_x, self.pos_y
 
-    def set_pos(self, pos):
+    def set_pos(self, pos): # Устанавливает координаты противника
         self.pos_x, self.pos_y = pos
 
 
-class Collectible(pygame.sprite.Sprite):  # Класс собираемых объектов (пока не знаю каких, Даша - решай)
+class Collectible(pygame.sprite.Sprite):  # Класс собираемых объектов (в зависимости от уровня)
     def __init__(self, pos, image):
         super(Collectible, self).__init__(collectible_group, all_sprites)
         self.pos_x, self.pos_y = pos
         self.image = image
 
-    def get_pos(self):
+    def get_pos(self): # Возвращает координаты предмета
         return self.pos_x, self.pos_y
 
-    def render(self, level):
-        self.rect = self.image.get_rect().move(level.cell_size * self.pos_y + level.cell_size * 0.35,
-                                               level.cell_size * self.pos_x + level.cell_size * 0.2)
 
-
-class Game:
-    def __init__(self, level, player, enemy_list):
+class Game: # Класс, объединяющий уровень, противников, игрока и предметы сбора.
+    def __init__(self, level, player, enemy_list): # Принимает экземпляры классов уровня, игрока и список экземпляров класса противника
         self.level = level
         self.player = player
         self.enemy_list = enemy_list
 
 
-    def render(self):
+    def render(self): # Общая прорисовка: Вызывает метод render у всех зависимых объектов
         self.level.render()
         self.player.render(self.level)
         for i in self.enemy_list:
             i.render()
 
-    def move_player(self):
+    def move_player(self): # Отвечает за перемещение игрока
         next_x, next_y = self.player.get_pos()
         if pygame.key.get_pressed()[pygame.K_LEFT]:
             next_x -= 1
@@ -281,11 +279,11 @@ class Game:
         elif pygame.key.get_pressed()[pygame.K_DOWN]:
             next_y += 1
         print(self.level.get_tile_id((next_x, next_y)))
-        if self.level.is_free((next_x, next_y)):
+        if self.level.is_free((next_x, next_y)): # проверка, может ли игрок наступить на плитку
             self.player.set_pos((next_x, next_y))
             self.check_tile()
 
-    def check_tile(self):
+    def check_tile(self): # Функция - попытка реализовать твой код для запуска победы. Требует твоей доработки
         global amount_of_animation
         if self.level.get_tile_id(self.player.get_pos()) == 44:
             while amount_of_animation != 0:
@@ -294,7 +292,7 @@ class Game:
                 clock.tick(100)
             win_window()
 
-    def move_enemy(self, enemy):
+    def move_enemy(self, enemy): # Отвечает за перемещение противника-преследователя
         next_position = self.level.find_path_step(enemy.get_pos(), self.player.get_pos())
         for i in self.enemy_list:
             t_pos = i.get_pos()
@@ -480,17 +478,17 @@ def start_level_random():  # функция level_random
     current_level = random.choice(random_level)
     start_game(current_level)
 
-
-game_base = {'winter_map': {'player': (10, 16),
-                            'player_image': 'mario.png',
-                            'level': Level('winter_map', [27, 30, 59, 44], 44, 59),
-                            'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)],
-                            'enemy_image': load_image('winter_map\Yeti.png'),
-                            'enemy_size': (6, 8)},
+# ДАША - это словарь который присоединяет все объекты в игре к своим уровням
+game_base = {'winter_map': {'player': (10, 16), # Координаты игрока
+                            'player_image': 'mario.png', # Картинка игрока
+                            'level': Level('winter_map', [27, 30, 59, 44], 44, 59), # Экземпляр класса уровня
+                            'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)], # Список координат появления противников
+                            'enemy_image': 'winter_map\Yeti.png', # Картинка противника
+                            'enemy_size': (6, 8)}, # Количество картинок внутри картинки противника по горизонтали и вертикали
 
              'desert_map': {'player': (4, 1),
                             'player_image': 'mario.png',
-                            'level': Level('desert_map', [43, 20, 0, 42, 44], 44, 59),
+                            'level': Level('desert_map', [43, 20, 0, 42, 4, 44], 44, 59),
                             'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)],
                             'enemy_image': load_image('desert_map\Gangblanc.png'),
                             'enemy_size': (8, 8)}}
@@ -500,8 +498,6 @@ game_base = {'winter_map': {'player': (10, 16),
 def start_game(name_level):
     global number_of_cells, screen_rect, number_of_lives, vol, flPause, amount_of_animation
     global all_sprites, player_group, enemy_group, collectible_group, asterisks
-
-
 
     amount_of_animation = 100  # количество прокруток анимации победы
     all_sprites = pygame.sprite.Group()
