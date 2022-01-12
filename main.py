@@ -27,7 +27,6 @@ vol = 0.5  # громкость музыки
 pygame.mixer.music.set_volume(vol)
 flPause = False  # флаг включена/выключена музыка
 
-
 def load_image(name, colorkey=None):  # Функция для загрузки картинок
     fn = os.path.join('data', name)
     # если файл не существует, то выходим
@@ -255,7 +254,7 @@ def print_text(message, x, y, font_colour=(20, 20, 20), font_type='PingPong.ttf'
 
 
 class Level:  # Класс игрового поля
-    def __init__(self, name, free_tiles, finish_tile, collectible_tile):  # создание поля
+    def __init__(self, name, free_tiles, finish_tile, collectible_tiles):  # создание поля
         self.name = name
         self.free_tiles = free_tiles
         self.finish_tile = finish_tile
@@ -264,18 +263,19 @@ class Level:  # Класс игрового поля
         self.tile_map = pytmx.load_pygame(filename)
         self.height = self.tile_map.height
         self.width = self.tile_map.width
-        self.collectible_tile = collectible_tile
+        self.collectible_tiles = collectible_tiles
         self.tile_size = self.tile_map.tilewidth
+        self.points = 0
 
-        self.collectible_list = []
-        for y in range(
-                self.height):  # Проверяет, является ли клетка доступной для сбора и добавляет в список предметов для сбора
+        self.collectible_list = {}
+        for y in range(self.height):  # Проверяет, является ли клетка доступной для сбора и добавляет в список предметов для сбора
             for x in range(self.width):
                 image = self.tile_map.get_tile_image(x, y, 1)
-                if self.get_tile_id((x, y)) == collectible_tile:
-                    self.collectible_list.append(Collectible((x, y), image))
+                pos_tile = self.get_tile_id((x, y))
+                if pos_tile in self.collectible_tiles.keys():
+                    self.collectible_list[(x, y)] = Collectible((x, y), image, self.collectible_tiles[pos_tile])
 
-    def render(self):  # Прорисовка поля, а также предметов сбора, если они собраны (сбор не реализован)
+    def render(self):  # Прорисовка поля, а также предметов сбора, если они не собраны (сбор не реализован)
         for y in range(self.height):
             for x in range(self.width):
                 flag = False
@@ -285,12 +285,11 @@ class Level:  # Класс игрового поля
 
                 try:
                     image2 = self.tile_map.get_tile_image(x, y, 1)
-                    for i in self.collectible_list:
-                        if i.get_pos() == (x, y):
-                            flag = True
-                    if flag or self.get_tile_id((x, y)) != self.collectible_tile:
+                    if (x, y) in self.collectible_list.keys():
+                        flag = True
+                    if flag or self.get_tile_id((x, y)) not in self.collectible_tiles.keys():
                         screen.blit(image2, (x * self.tile_size, y * self.tile_size))
-                except TypeError:
+                except (TypeError, KeyError):
                     pass
 
     def find_path_step(self, start, target):  # Функция ИИ у противников
@@ -324,6 +323,13 @@ class Level:  # Класс игрового поля
 
     def is_free(self, position):  # Проверяет, свободна ли клетка
         return self.get_tile_id(position) in self.free_tiles
+
+    def collect(self, pos):
+        global points
+        item = self.collectible_list[pos]
+        self.points += item.points
+        del self.collectible_list[pos]
+        print(self.points)
 
 
 class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
@@ -382,10 +388,12 @@ class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
 
 
 class Collectible(pygame.sprite.Sprite):  # Класс собираемых объектов (в зависимости от уровня)
-    def __init__(self, pos, image):
+    def __init__(self, pos, image, points):
         super(Collectible, self).__init__(collectible_group, all_sprites)
         self.pos_x, self.pos_y = pos
         self.image = image
+        self.rect = self.image.get_rect()
+        self.points = points
 
     def get_pos(self):  # Возвращает координаты предмета
         return self.pos_x, self.pos_y
@@ -421,12 +429,17 @@ class Game:  # Класс, объединяющий уровень, против
 
     def check_tile(self):  # Функция - попытка реализовать твой код для запуска победы. Требует твоей доработки
         global amount_of_animation
-        if self.level.get_tile_id(self.player.get_pos()) == 44:
+        if self.level.get_tile_id(self.player.get_pos()) == self.level.finish_tile:
             while amount_of_animation != 0:
                 amount_of_animation -= 1
                 create_particles((random.randint(-50, 650), random.randint(-100, 100)))
                 clock.tick(100)
             win_window()
+        elif self.level.get_tile_id(self.player.get_pos()) in self.level.collectible_tiles.keys() and\
+                self.player.get_pos() in self.level.collectible_list.keys():
+            self.level.collect(self.player.get_pos())
+
+
 
     def move_enemy(self, enemy):  # Отвечает за перемещение противника-преследователя
         next_position = self.level.find_path_step(enemy.get_pos(), self.player.get_pos())
@@ -617,19 +630,23 @@ def start_level_random():  # функция level_random
 #    - это словарь который присоединяет все объекты в игре к своим уровням
 game_base = {'winter_map': {'player': (10, 16),  # Координаты игрока
                             'player_image': 'mario.png',  # Картинка игрока
-                            'level': Level('winter_map', [27, 30, 59, 44], 44, 59),  # Экземпляр класса уровня
+                            'free_tiles': [27, 30, 59, 44], #
+                            'win_tile': 44,
                             'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)],
                             # Список координат появления противников
                             'enemy_image': load_image('winter_map\Yeti.png'),  # Картинка противника
-                            'enemy_size': (6, 8)},
+                            'enemy_size': (6, 8),
+                            'points': {59: 100}},
              # Количество картинок внутри картинки противника по горизонтали и вертикали
 
              'desert_map': {'player': (4, 1),
                             'player_image': 'mario.png',
-                            'level': Level('desert_map', [43, 20, 0, 42, 4, 44], 44, 59),
+                            'free_tiles': [43, 20, 0, 42, 4, 44], #
+                            'win_tile': 44,
                             'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)],
                             'enemy_image': load_image('desert_map\Gangblanc.png'),
-                            'enemy_size': (8, 8)}}
+                            'enemy_size': (8, 8),
+                            'points': {4: 1000}}}
 
 
 def start_game(name_level):
@@ -642,13 +659,14 @@ def start_game(name_level):
     enemy_group = pygame.sprite.Group()
     collectible_group = pygame.sprite.Group()
     asterisks = pygame.sprite.Group()
-    number_of_cells = 12
 
-    level = game_base[name_level]['level']
-    player = Player(game_base[name_level]['player_image'], game_base[name_level]['player'])
+    gb = game_base[name_level] # Сокращение записи
+
+    level = Level(name_level, gb['free_tiles'], gb['win_tile'], gb['points'])
+    player = Player(gb['player_image'], gb['player'])
     enemies = []
     for i in game_base[name_level]['enemies_list']:
-        enemies.append(Enemy(i, level, game_base[name_level]['enemy_image'], game_base[name_level]['enemy_size']))
+        enemies.append(Enemy(i, level, gb['enemy_image'], gb['enemy_size']))
     game = Game(level, player, enemies)
 
     menu_button = Button(50, 45, (190, 233, 221), (180, 255, 235))
