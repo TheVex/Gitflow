@@ -433,7 +433,7 @@ class Game:  # Класс, объединяющий уровень, против
             self.check_tile()
 
     def check_tile(self):  # Функция реагирует на некоторые клетки
-        global amount_of_animation
+        global amount_of_animation # ДАША
         if self.level.get_tile_id(self.player.get_pos()) == self.level.finish_tile:  # Реакция в случае попадания на победную плитку
             while amount_of_animation != 0:  # С этим теперь возиться тебе
                 amount_of_animation -= 1  # Кол-во заработанных очков находится в переменной self.level.points
@@ -729,7 +729,7 @@ def start_game(name_level):
                 for i in game.enemy_list:
                     game.move_enemy(i)
                     i.update_frame()
-            if event.type == COUNTDOWN_EVENT_TYPE: # счётчик времени
+            if event.type == COUNTDOWN_EVENT_TYPE: # ДАША: счётчик времени
                 countdown -= 1
                 print(countdown)
                 if countdown <= 0:
