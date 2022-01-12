@@ -6,12 +6,12 @@
  <tileset firstgid="170" source="Cactus.tsx"/>
  <layer id="1" name="Слой тайлов 1" width="20" height="20">
   <data encoding="base64" compression="zlib">
-   eJxrZGBgaARiLyD2huIAIA4kEzcOcvPUoJha5lkAsSUQ+1HJPGRzqGEezAw7ILaH4hAqmEeJm5AxNdw0FLEjECdjwU5kmheEQzyJTHNxmQfDpMY/yDwfBkheJsY8FyB2xYKJcR8oraOnpzAgDseCiTEPm18JmRfMgEjb6BhbWkc3TxPNPFIxrc2DYQCw3H5P
+   eJzd0z0OwjAMhmGfJmegAlG1Iz9V/8Z2KSfJzfksEtWKusTxAAzP+sqSbU9EHm5wD3oYlPyX91xg1TtBBZ1RT3YserFxhTqYDXolM0kWM/2iBl4HWmVvhDOswgU2ZZd7D9r/hS2im7v/2PNJk/+nK+i5BP8133ruPXHvSZ9fljSzsYn22079062/ARiTe/4=
   </data>
  </layer>
  <layer id="2" name="Слой тайлов 2" width="20" height="20">
   <data encoding="base64" compression="zlib">
-   eJylVNFpw1AMVMCQAZqv0gmSBVrSBRJaT9Du4kBmKcZ2/F43rB7VkbMim5IeHHbsl9Od9J4b+UVSdspeefnHfaN8Um6UuwVmqztSfUZlug09y7Y+k8ZI1wgjaRePZ+VKubYac/6ARNckU589+YCHra3h5/DLXirnOVneb/KV3HWkd0s5k63rjNxz6EAX/RPy6gHdnjL7WUKPe+o1/IwuRp7llvR27h3gPWIuPm/kE9qsk0kHqCgv4PfcX4C5ZMrLiPYca6NWpvUFpU/IC+yVn8RXyxGBs6O3Pu+b8kT8IF2R+Mxlqom8qPWgfCS9g/JZWS94Ygwyzev9Fb1j8D+gJeJ3yYs99658caydBp/11rKCrdzOdw5Rvkivk+mZj84+fFV0D0DrS6557/m+DzLtH/gDvTyB/Q==
+   eJyllN1NAzEQhI10EgXAE6KCpAEQNAAiqQB6OSRq4eF+bKdD9pQd5ctiTghGGp3jc2ZnvPb16YhiHIyjcf7HuDfeGq+N2xVWr5tRn+hct8dc9fUVGhnPFjK0F48fxgvjpdf4yZ9Q8Czp3OcIH/Kw8TWcl1966YLn4nkP8FXCM+PdWs7i6wYn91w60tX+JXiNkO6IzLGX0uOeRo3Yo9nJXm6gtw3vhOhRfYl5Wz6lTZ0KHaFDXiGeud9AfanIS7TOHLVVq2L9gmWflFd4ML6Bj56jBWbX3sa8L8Z38BW6KbXvXEVN5VWtK+MN9J6Md8b9iidiSud5o79F77nxPyGn03dK/paxztzOeB+4Dxq867NnFYf0vb9rXiLGoKe8vPOtuy9fHcaCtD7TKe9fvu8Tfk+Y+wLgGIIy
   </data>
  </layer>
 </map>

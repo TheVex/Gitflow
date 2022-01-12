@@ -57,7 +57,7 @@
         },
         "Winter_map.tmx": {
             "scale": 1,
-            "selectedLayer": 0,
+            "selectedLayer": 1,
             "viewCenter": {
                 "x": 354.5,
                 "y": 423
