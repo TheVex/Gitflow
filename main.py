@@ -257,7 +257,7 @@ def print_text(message, x, y, font_colour=(20, 20, 20), font_type='PingPong.ttf'
 class Level:  # Класс игрового поля
     def __init__(self, name, free_tiles, finish_tile, collectible_tiles, death_tiles):  # создание поля
         self.name = name
-        self.free_tiles = free_tiles
+        self.free_tiles = free_tiles + death_tiles
         self.finish_tile = finish_tile
         self.collectible_tiles = collectible_tiles
         self.death_tiles = death_tiles
@@ -307,7 +307,7 @@ class Level:  # Класс игрового поля
             for dx, dy in (1, 0), (0, 1), (-1, 0), (0, -1):
                 next_x, next_y = x + dx, y + dy
                 if 0 <= next_x < self.width and 0 <= next_y < self.height \
-                        and self.is_free((next_x, next_y)) and distance[next_y][next_x] == INF:
+                        and self.is_free((next_x, next_y), True) and distance[next_y][next_x] == INF:
                     distance[next_y][next_x] = distance[y][x] + 1
                     prev[next_y][next_x] = (x, y)
                     queue.append((next_x, next_y))
@@ -324,7 +324,9 @@ class Level:  # Класс игрового поля
         except KeyError:
             return 0
 
-    def is_free(self, position):  # Проверяет, свободна ли клетка
+    def is_free(self, position, enemy=False):  # Проверяет, свободна ли клетка
+        if enemy:
+            return self.get_tile_id(position) in self.free_tiles and self.get_tile_id(position) not in self.death_tiles
         return self.get_tile_id(position) in self.free_tiles
 
     def collect(self, pos):
@@ -379,6 +381,9 @@ class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
         self.rect = self.image.get_rect().move(self.level.tile_size * self.pos_x,
                                                self.level.tile_size * self.pos_y)
 
+        if pygame.sprite.spritecollideany(self, player_group):
+            game_over()
+
     def update_frame(self):  # Анимирует противника. Вызывается в определенный промежуток времени
         self.cur_frame = (self.cur_frame + 1) % len(self.frames)
         self.image = self.frames[self.cur_frame]
@@ -427,10 +432,10 @@ class Game:  # Класс, объединяющий уровень, против
             self.player.set_pos((next_x, next_y))
             self.check_tile()
 
-    def check_tile(self):  # Функция - попытка реализовать твой код для запуска победы. Требует твоей доработки
+    def check_tile(self):  # Функция реагирует на некоторые клетки
         global amount_of_animation
-        if self.level.get_tile_id(self.player.get_pos()) == self.level.finish_tile:
-            while amount_of_animation != 0:
+        if self.level.get_tile_id(self.player.get_pos()) == self.level.finish_tile: # Реакция в случае попадания на победную плитку
+            while amount_of_animation != 0:  # С этим теперь возиться тебе
                 amount_of_animation -= 1
                 create_particles((random.randint(-50, 650), random.randint(-100, 100)))
                 clock.tick(100)
@@ -438,6 +443,8 @@ class Game:  # Класс, объединяющий уровень, против
         elif self.level.get_tile_id(self.player.get_pos()) in self.level.collectible_tiles.keys() and\
                 self.player.get_pos() in self.level.collectible_list.keys():
             self.level.collect(self.player.get_pos())
+        elif self.level.get_tile_id(self.player.get_pos()) in self.level.death_tiles:
+            game_over()
 
     def move_enemy(self, enemy):  # Отвечает за перемещение противника-преследователя
         next_position = self.level.find_path_step(enemy.get_pos(), self.player.get_pos())
@@ -446,6 +453,7 @@ class Game:  # Класс, объединяющий уровень, против
             if t_pos == next_position:
                 return
         enemy.pos_x, enemy.pos_y = next_position
+
 
 
 class Particle(pygame.sprite.Sprite):
@@ -643,8 +651,8 @@ game_base = {'winter_map': {'player': (10, 16),  # Координаты игро
                             'player_image': 'mario.png',
                             'free_tiles': [43, 20, 0, 42, 4, 44], #
                             'win_tile': 166,
-                            'death_tiles': [57, 59, 60, 76, 77, 93, 170, 171, 172, 173, 174, 175, 176],
-                            'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)],
+                            'death_tiles': [57, 59, 60, 74, 76, 77, 78, 93, 170, 171, 172, 173, 174, 175, 176],
+                            'enemies_list': [(18, 1), (1, 18), (18, 18)],
                             'enemy_image': load_image('desert_map\Gangblanc.png'),
                             'enemy_size': (8, 8),
                             'points': {4: 1000},
