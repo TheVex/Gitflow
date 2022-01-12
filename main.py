@@ -434,9 +434,9 @@ class Game:  # Класс, объединяющий уровень, против
 
     def check_tile(self):  # Функция реагирует на некоторые клетки
         global amount_of_animation
-        if self.level.get_tile_id(self.player.get_pos()) == self.level.finish_tile: # Реакция в случае попадания на победную плитку
+        if self.level.get_tile_id(self.player.get_pos()) == self.level.finish_tile:  # Реакция в случае попадания на победную плитку
             while amount_of_animation != 0:  # С этим теперь возиться тебе
-                amount_of_animation -= 1
+                amount_of_animation -= 1  # Кол-во заработанных очков находится в переменной self.level.points
                 create_particles((random.randint(-50, 650), random.randint(-100, 100)))
                 clock.tick(100)
             win_window()
@@ -647,12 +647,12 @@ game_base = {'winter_map': {'player': (10, 16),  # Координаты игро
                             'countdown': 30}, # Таймер, в секундах
              # Количество картинок внутри картинки противника по горизонтали и вертикали
 
-             'desert_map': {'player': (4, 1),
+             'desert_map': {'player': (2, 1),
                             'player_image': 'mario.png',
-                            'free_tiles': [43, 20, 0, 42, 4, 44], #
+                            'free_tiles': [19, 43, 20, 0, 42, 4, 166], #
                             'win_tile': 166,
                             'death_tiles': [57, 59, 60, 74, 76, 77, 78, 93, 170, 171, 172, 173, 174, 175, 176],
-                            'enemies_list': [(18, 1), (1, 18), (18, 18)],
+                            'enemies_list': [],
                             'enemy_image': load_image('desert_map\Gangblanc.png'),
                             'enemy_size': (8, 8),
                             'points': {4: 1000},
@@ -729,7 +729,7 @@ def start_game(name_level):
                 for i in game.enemy_list:
                     game.move_enemy(i)
                     i.update_frame()
-            if event.type == COUNTDOWN_EVENT_TYPE:
+            if event.type == COUNTDOWN_EVENT_TYPE: # счётчик времени
                 countdown -= 1
                 print(countdown)
                 if countdown <= 0:
