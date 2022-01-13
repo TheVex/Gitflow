@@ -415,6 +415,7 @@ class Game:  # Класс, объединяющий уровень, против
         self.player.render(self.level)
         for i in self.enemy_list:
             i.render()
+        self.check_tile()
 
     def move_player(self):  # Отвечает за перемещение игрока
         next_x, next_y = self.player.get_pos()
@@ -428,7 +429,7 @@ class Game:  # Класс, объединяющий уровень, против
             next_y += 1
         if self.level.is_free((next_x, next_y)):  # проверка, может ли игрок наступить на плитку
             self.player.set_pos((next_x, next_y))
-            self.check_tile()
+
 
     def check_tile(self):  # Функция реагирует на некоторые клетки
         global amount_of_animation # ДАША
@@ -831,7 +832,7 @@ def start_game(name_level):
         screen.blit(text, text_rect)
 
         font = pygame.font.Font(None, 50)
-        text = font.render(str(150), True, (0, 0, 0)) # ВАНЯ 150 нужно заменить на количесво собранных очков
+        text = font.render(str(game.level.points), True, (0, 0, 0)) # ВАНЯ 150 нужно заменить на количесво собранных очков
         screen.blit(text, (560, 652))
 
         all_sprites_menu.draw(screen)
@@ -840,9 +841,6 @@ def start_game(name_level):
         clock.tick(60)
         pygame.display.flip()
 
-
-player_image = load_image('mario.png')
-star_image = load_image('star.png')
 
 if __name__ == '__main__':
     show_menu()
