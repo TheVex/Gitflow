@@ -685,7 +685,7 @@ def start_level_random():  # функция level_random
 
 
 #    - это словарь который присоединяет все объекты в игре к своим уровням
-game_base = {'winter_map': {'player': (10, 16),  # Координаты игрока
+GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игрока
                             'player_image': 'mario.png',  # Картинка игрока
                             'free_tiles': [27, 30, 59, 44], # Свободные плитки
                             'win_tile': 44, # Победная плитка
@@ -694,8 +694,8 @@ game_base = {'winter_map': {'player': (10, 16),  # Координаты игро
                             # Список координат появления противников
                             'enemy_image': load_image('winter_map\Yeti.png'),  # Картинка противника
                             'enemy_size': (6, 8),
-                            'points': {59: 10}, # Количество очков, получаемых при сборе предмета (в виде "ID_предмета: кол_очков")
-                            'countdown': 30}, # Таймер, в секундах
+                            'points': {59: 5}, # Количество очков, получаемых при сборе предмета (в виде "ID_предмета: кол_очков")
+                            'countdown': 60}, # Таймер, в секундах
              # Количество картинок внутри картинки противника по горизонтали и вертикали
 
              'desert_map': {'player': (2, 1),
@@ -706,7 +706,7 @@ game_base = {'winter_map': {'player': (10, 16),  # Координаты игро
                             'enemies_list': [],
                             'enemy_image': load_image('desert_map\Gangblanc.png'),
                             'enemy_size': (8, 8),
-                            'points': {4: 100},
+                            'points': {4: 50},
                             'countdown': 60}}
 
 
@@ -723,12 +723,12 @@ def start_game(name_level):
     collectible_group = pygame.sprite.Group()
     asterisks = pygame.sprite.Group()
 
-    gb = game_base[name_level] # Сокращение записи
+    gb = GAME_BASE[name_level] # Сокращение записи
 
     level = Level(name_level, gb['free_tiles'], gb['win_tile'], gb['points'], gb['death_tiles'])
     player = Player(gb['player_image'], gb['player'])
     enemies = []
-    for i in game_base[name_level]['enemies_list']:
+    for i in gb['enemies_list']:
         enemies.append(Enemy(i, level, gb['enemy_image'], gb['enemy_size']))
     game = Game(level, player, enemies)
 
