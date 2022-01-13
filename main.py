@@ -3,6 +3,7 @@ import sys
 import os
 import random
 import pytmx
+import  time
 
 pygame.init()
 
@@ -36,7 +37,6 @@ def load_image(name, colorkey=None):  # Функция для загрузки �
         sys.exit()
     image = pygame.image.load(fn)
     if colorkey is not None:
-        print(55)
         image = image.convert()
         if colorkey == -1:
             colorkey = image.get_at((0, 0))
@@ -209,7 +209,7 @@ def play():
         screen.blit(text, text_rect)
         pygame.draw.rect(screen, (180, 255, 235), (70, 100, 500, 2), 0)
 
-        menu_button.draw(10, 645, '', show_menu, 40)
+        menu_button.draw(10, 645, '', show_menu, 40) # Даша
         pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
 
         start_button.draw(70, 150, '', start_level_desert, 30)  # Прорисовка кнопок уровней
@@ -334,7 +334,6 @@ class Level:  # Класс игрового поля
         item = self.collectible_list[pos]
         self.points += item.points
         del self.collectible_list[pos]
-        print(self.points)
 
 
 class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
@@ -427,7 +426,6 @@ class Game:  # Класс, объединяющий уровень, против
             next_x += 1
         elif pygame.key.get_pressed()[pygame.K_DOWN]:
             next_y += 1
-        print(self.level.get_tile_id((next_x, next_y)))
         if self.level.is_free((next_x, next_y)):  # проверка, может ли игрок наступить на плитку
             self.player.set_pos((next_x, next_y))
             self.check_tile()
@@ -504,7 +502,10 @@ class Button:
 
 def rule_window():  # окно с правилами игры
     global flPause, vol
-    back_button = Button(75, 60, (190, 233, 221), (180, 255, 235))  # оздание кнопки вернуться в меню
+    menu_button = Button(50, 45, (190, 233, 221), (180, 255, 235))  # создание кнопки вернуться в меню
+    text = os.path.join('data', 'правила.txt')
+    text = open(text, mode="r", encoding="utf8")
+    text = text.read()
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -524,8 +525,20 @@ def rule_window():  # окно с правилами игры
                     vol += 0.1
                     pygame.mixer.music.set_volume(vol)
         screen.blit(menu_bckgr, (0, 0))
-        back_button.draw(20, 580, '<--', show_menu, 40)
-        pygame.draw.rect(screen, (180, 255, 235), (19, 579, 77, 62), 3)
+        font = pygame.font.Font(None, 70)  # Надпись 'Правила игры'
+        text_game = font.render('Правила игры', True, (16, 17, 18))
+        text_rect = text_game.get_rect(center=(320, 70))
+        screen.blit(text_game, text_rect)
+        pygame.draw.rect(screen, (180, 255, 235), (70, 100, 500, 2), 0)
+        descriptioncounter = 0
+        for x in text.split('\n'):
+            descriptioncounter += 2
+            screen.blit((pygame.font.SysFont('constantia', 20).render(x, True, 'BLACK')),
+                        (80, 100 + 10 * descriptioncounter))
+
+        menu_button.draw(10, 645, '', show_menu, 40)  # Даша
+        pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
+        all_sprites_menu.draw(screen)
         pygame.display.flip()
 
 
@@ -558,9 +571,29 @@ def win_window():  # окно с правилами игры
 
 def game_over():  # окно проигрыша
     global number_of_lives, flPause, vol
-    replay_button = Button(130, 60, (190, 233, 221), (180, 255, 235))  # создание кнопок переиграть и вернуться в меню
-    menu_button = Button(130, 60, (190, 233, 221), (180, 255, 235))
+    replay_button = Button(120, 65, (190, 233, 221), (180, 255, 235))  # создание кнопок переиграть и вернуться в меню
+    menu_button = Button(120, 65, (190, 233, 221), (180, 255, 235))
     number_of_lives -= 1
+    all_sprites_game_over = pygame.sprite.Group()
+    fullname = os.path.join('Общие картинки', 'Меню71.png')
+    fullname = os.path.join('Картинки', fullname)
+    sprite = pygame.sprite.Sprite()
+    image = load_image(fullname, -1)
+    sprite.image = pygame.transform.scale(image, (90, 70))
+    sprite.rect = sprite.image.get_rect()
+    all_sprites_game_over.add(sprite)
+    sprite.rect.x = 193
+    sprite.rect.y = 395
+
+    fullname = os.path.join('Общие картинки', 'переиграть3.png')
+    fullname = os.path.join('Картинки', fullname)
+    sprite = pygame.sprite.Sprite()
+    image = load_image(fullname, -1)
+    sprite.image = pygame.transform.scale(image, (140, 60))
+    sprite.rect = sprite.image.get_rect()
+    all_sprites_game_over.add(sprite)
+    sprite.rect.x = 340
+    sprite.rect.y = 400
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -580,17 +613,23 @@ def game_over():  # окно проигрыша
                     vol += 0.1
                     pygame.mixer.music.set_volume(vol)
 
-        if number_of_lives < 1:  # открытие окна в случае отсутствия жизней
+        if number_of_lives < 1:  # открытие окна в случае отсутствия жизней  #ДАША
             screen.blit(menu_bckgr, (0, 0))
-            font = pygame.font.Font(None, 90)
+            font_type = os.path.join('data', 'PingPong.ttf')
+            font = pygame.font.Font(font_type, 90)
             text = font.render('Game over', True, (16, 17, 18))
-            text_rect = text.get_rect(center=(290, 250))
+            text_rect = text.get_rect(center=(320, 330))
             screen.blit(text, text_rect)
+            font_type = '' # Ваня эта строчка серая, когда проект будут проверять, ее могут заметить, но без этой строчки при полном закрытии окнаб выходит ошибки в консоль
+            # Это из-за того что я открывала документ со шрифтом. Я хз что делать
 
-            replay_button.draw(230, 300, 'replay', replay_the_level, 40)
-            pygame.draw.rect(screen, (180, 255, 235), (229, 299, 132, 62), 3)
-            menu_button.draw(230, 375, 'menu', show_menu, 40)
-            pygame.draw.rect(screen, (180, 255, 235), (229, 374, 132, 62), 3)
+            replay_button.draw(350, 400, '', replay_the_level, 40)
+            pygame.draw.rect(screen, (180, 255, 235), (349, 399, 122, 67), 3)
+
+            menu_button.draw(180, 400, '', show_menu, 40)  # Даша
+            pygame.draw.rect(screen, (180, 255, 235), (179, 399, 122, 67), 3)
+
+            all_sprites_game_over.draw(screen)
 
             pygame.display.flip()
         else:
@@ -661,7 +700,7 @@ game_base = {'winter_map': {'player': (10, 16),  # Координаты игро
 
 def start_game(name_level):
     global number_of_cells, screen_rect, number_of_lives, vol, flPause, amount_of_animation
-    global all_sprites, player_group, enemy_group, collectible_group, asterisks
+    global all_sprites, player_group, enemy_group, collectible_group, asterisks, countdown
 
     amount_of_animation = 100  # количество прокруток анимации победы
     all_sprites = pygame.sprite.Group()
@@ -687,29 +726,42 @@ def start_game(name_level):
     all_sprites_life1 = pygame.sprite.Group()
     sprite = pygame.sprite.Sprite()
     image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (45, 45))
+    sprite.image = pygame.transform.scale(image, (40, 40))
     sprite.rect = sprite.image.get_rect()
     all_sprites_life1.add(sprite)
-    sprite.rect.x = 590
+    sprite.rect.x = 370
     sprite.rect.y = 645
 
     all_sprites_life2 = pygame.sprite.Group()
     sprite = pygame.sprite.Sprite()
     image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (45, 45))
+    sprite.image = pygame.transform.scale(image, (40, 40))
     sprite.rect = sprite.image.get_rect()
     all_sprites_life2.add(sprite)
-    sprite.rect.x = 540
+    sprite.rect.x = 325
     sprite.rect.y = 645
 
     all_sprites_life3 = pygame.sprite.Group()
     sprite = pygame.sprite.Sprite()
     image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (45, 45))
+    sprite.image = pygame.transform.scale(image, (40, 40))
     sprite.rect = sprite.image.get_rect()
     all_sprites_life3.add(sprite)
-    sprite.rect.x = 490
+    sprite.rect.x = 280
     sprite.rect.y = 645
+
+    all_sprites_play = pygame.sprite.Group()
+
+    fullname = os.path.join('Общие картинки', 'Emerald.png')
+    fullname = os.path.join('Картинки', fullname)
+
+    sprite = pygame.sprite.Sprite()
+    image = load_image(fullname)
+    sprite.image = pygame.transform.scale(image, (25, 25))
+    sprite.rect = sprite.image.get_rect()
+    all_sprites_play.add(sprite)
+    sprite.rect.x = 530
+    sprite.rect.y = 655
 
     screen_rect = (0, 0, width, height)
 
@@ -771,8 +823,19 @@ def start_game(name_level):
 
         menu_button.draw(10, 645, '', show_menu, 40)
         pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
+        time_play = time.strftime("%M:%S", time.gmtime(countdown))
+
+        font = pygame.font.Font(None, 50)
+        text = font.render(str(time_play), True, (0, 0, 0))
+        text_rect = text.get_rect(center=(470, 670))
+        screen.blit(text, text_rect)
+
+        font = pygame.font.Font(None, 50)
+        text = font.render(str(150), True, (0, 0, 0)) # ВАНЯ 150 нужно заменить на количесво собранных очков
+        screen.blit(text, (560, 652))
 
         all_sprites_menu.draw(screen)
+        all_sprites_play.draw(screen)
 
         clock.tick(60)
         pygame.display.flip()
