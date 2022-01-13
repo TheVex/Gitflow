@@ -340,6 +340,7 @@ class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
     def __init__(self, name, position):
         super(Player, self).__init__(player_group, all_sprites)
         self.pos_x, self.pos_y = position
+        self.start_pos = position
         self.image = load_image(name)
 
     def get_pos(self):  # Возвращает координаты игрока
@@ -358,6 +359,7 @@ class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
                  size):  # принимает в себя картинку, состоящую из нескольких картинок для анимации
         super(Enemy, self).__init__(enemy_group, all_sprites)  # и размер, который будет взят для анимирования
         self.pos_x, self.pos_y = pos
+        self.start_pos = pos
         self.level = level
 
         self.delay = 300
@@ -379,9 +381,6 @@ class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
     def render(self):  # Ставит противника на поле. Вызывается каждый кадр
         self.rect = self.image.get_rect().move(self.level.tile_size * self.pos_x,
                                                self.level.tile_size * self.pos_y)
-
-        if pygame.sprite.spritecollideany(self, player_group):
-            game_over()
 
     def update_frame(self):  # Анимирует противника. Вызывается в определенный промежуток времени
         self.cur_frame = (self.cur_frame + 1) % len(self.frames)
@@ -416,6 +415,7 @@ class Game:  # Класс, объединяющий уровень, против
         for i in self.enemy_list:
             i.render()
         self.check_tile()
+        self.check_collide()
 
     def move_player(self):  # Отвечает за перемещение игрока
         next_x, next_y = self.player.get_pos()
@@ -430,6 +430,10 @@ class Game:  # Класс, объединяющий уровень, против
         if self.level.is_free((next_x, next_y)):  # проверка, может ли игрок наступить на плитку
             self.player.set_pos((next_x, next_y))
 
+    def check_collide(self):
+        if pygame.sprite.spritecollideany(self.player, enemy_group):
+            self.decrease_live()
+
 
     def check_tile(self):  # Функция реагирует на некоторые клетки
         global amount_of_animation # ДАША
@@ -443,7 +447,7 @@ class Game:  # Класс, объединяющий уровень, против
                 self.player.get_pos() in self.level.collectible_list.keys():
             self.level.collect(self.player.get_pos())
         elif self.level.get_tile_id(self.player.get_pos()) in self.level.death_tiles:
-            game_over()
+            self.decrease_live()
 
     def move_enemy(self, enemy):  # Отвечает за перемещение противника-преследователя
         next_position = self.level.find_path_step(enemy.get_pos(), self.player.get_pos())
@@ -452,6 +456,16 @@ class Game:  # Класс, объединяющий уровень, против
             if t_pos == next_position:
                 return
         enemy.pos_x, enemy.pos_y = next_position
+
+    def decrease_live(self):
+        global number_of_lives
+        print(number_of_lives)
+        number_of_lives -= 1
+        if number_of_lives < 1:
+            game_over()
+        self.player.set_pos(self.player.start_pos)
+        for i in self.enemy_list:
+            i.set_pos(i.start_pos)
 
 
 
@@ -614,29 +628,29 @@ def game_over():  # окно проигрыша
                     vol += 0.1
                     pygame.mixer.music.set_volume(vol)
 
-        if number_of_lives < 1:  # открытие окна в случае отсутствия жизней  #ДАША
-            screen.blit(menu_bckgr, (0, 0))
-            font_type = os.path.join('data', 'PingPong.ttf')
-            font = pygame.font.Font(font_type, 90)
-            text = font.render('Game over', True, (16, 17, 18))
-            text_rect = text.get_rect(center=(320, 330))
-            screen.blit(text, text_rect)
-            font_type = '' # Ваня эта строчка серая, когда проект будут проверять, ее могут заметить, но без этой строчки при полном закрытии окнаб выходит ошибки в консоль
-            # Это из-за того что я открывала документ со шрифтом. Я хз что делать
+        screen.blit(menu_bckgr, (0, 0))
+        font_type = os.path.join('data', 'PingPong.ttf')
+        font = pygame.font.Font(font_type, 90)
+        text = font.render('Game over', True, (16, 17, 18))
+        text_rect = text.get_rect(center=(320, 330))
+        screen.blit(text, text_rect)
+        font_type = '' # Ваня эта строчка серая, когда проект будут проверять, ее могут заметить, но без этой строчки при полном закрытии окнаб выходит ошибки в консоль
+        # Это из-за того что я открывала документ со шрифтом. Я хз что делать
 
-            replay_button.draw(350, 400, '', replay_the_level, 40)
-            pygame.draw.rect(screen, (180, 255, 235), (349, 399, 122, 67), 3)
+        replay_button.draw(350, 400, '', replay_the_level, 40)
+        pygame.draw.rect(screen, (180, 255, 235), (349, 399, 122, 67), 3)
 
-            menu_button.draw(180, 400, '', show_menu, 40)  # Даша
-            pygame.draw.rect(screen, (180, 255, 235), (179, 399, 122, 67), 3)
+        menu_button.draw(180, 400, '', show_menu, 40)  # Даша
+        pygame.draw.rect(screen, (180, 255, 235), (179, 399, 122, 67), 3)
 
-            all_sprites_game_over.draw(screen)
+        all_sprites_game_over.draw(screen)
 
-            pygame.display.flip()
-        else:
-            pygame.mixer.Sound.play(button_sound)
-            pygame.time.delay(300)
-            replay_the_level()
+        pygame.display.flip()
+        # else:
+            # pygame.mixer.Sound.play(button_sound)
+            # pygame.time.delay(300)
+            # replay_the_level()
+
 
 
 def replay_the_level():  # функция "переиграть"
@@ -646,21 +660,18 @@ def replay_the_level():  # функция "переиграть"
 
 def start_level_desert():  # функция level_desert
     global current_level, number_of_lives
-    number_of_lives = 3
     current_level = 'desert_map'
     start_game('desert_map')
 
 
 def start_level_jungle():  # функция level_jungle
     global current_level, number_of_lives
-    number_of_lives = 3
     current_level = 'jungle_map'
     start_game('jungle_map')
 
 
 def start_level_winter():  # функция level_winter
     global current_level, number_of_lives
-    number_of_lives = 3
     current_level = 'winter_map'
     start_game('winter_map')
 
@@ -683,7 +694,7 @@ game_base = {'winter_map': {'player': (10, 16),  # Координаты игро
                             # Список координат появления противников
                             'enemy_image': load_image('winter_map\Yeti.png'),  # Картинка противника
                             'enemy_size': (6, 8),
-                            'points': {59: 100}, # Количество очков, получаемых при сборе предмета (в виде "ID_предмета: кол_очков")
+                            'points': {59: 10}, # Количество очков, получаемых при сборе предмета (в виде "ID_предмета: кол_очков")
                             'countdown': 30}, # Таймер, в секундах
              # Количество картинок внутри картинки противника по горизонтали и вертикали
 
@@ -695,13 +706,15 @@ game_base = {'winter_map': {'player': (10, 16),  # Координаты игро
                             'enemies_list': [],
                             'enemy_image': load_image('desert_map\Gangblanc.png'),
                             'enemy_size': (8, 8),
-                            'points': {4: 1000},
+                            'points': {4: 100},
                             'countdown': 60}}
 
 
 def start_game(name_level):
     global number_of_cells, screen_rect, number_of_lives, vol, flPause, amount_of_animation
     global all_sprites, player_group, enemy_group, collectible_group, asterisks, countdown
+
+    number_of_lives = 3
 
     amount_of_animation = 100  # количество прокруток анимации победы
     all_sprites = pygame.sprite.Group()
