@@ -26,8 +26,8 @@
             "scale": 1,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 305.5,
-                "y": 350
+                "x": 318.5,
+                "y": 319
             }
         },
         "Keep.tsx": {
@@ -59,8 +59,8 @@
             "scale": 1,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 354.5,
-                "y": 423
+                "x": 319.5,
+                "y": 320
             }
         },
         "present.tsx": {

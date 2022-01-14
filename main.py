@@ -3,7 +3,7 @@ import sys
 import os
 import random
 import pytmx
-import  time
+import time
 
 pygame.init()
 
@@ -28,6 +28,7 @@ pygame.mixer.music.play(-1)
 vol = 0.5  # громкость музыки
 pygame.mixer.music.set_volume(vol)
 flPause = False  # флаг включена/выключена музыка
+
 
 def load_image(name, colorkey=None):  # Функция для загрузки картинок
     fn = os.path.join('data', name)
@@ -209,7 +210,7 @@ def play():
         screen.blit(text, text_rect)
         pygame.draw.rect(screen, (180, 255, 235), (70, 100, 500, 2), 0)
 
-        menu_button.draw(10, 645, '', show_menu, 40) # Даша
+        menu_button.draw(10, 645, '', show_menu, 40)  # Даша
         pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
 
         start_button.draw(70, 150, '', start_level_desert, 30)  # Прорисовка кнопок уровней
@@ -356,13 +357,18 @@ class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
 
 class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
     def __init__(self, pos, level, sheet,
-                 size):  # принимает в себя картинку, состоящую из нескольких картинок для анимации
+                 size, patrol=False):  # принимает в себя картинку, состоящую из нескольких картинок для анимации
         super(Enemy, self).__init__(enemy_group, all_sprites)  # и размер, который будет взят для анимирования
-        self.pos_x, self.pos_y = pos
-        self.start_pos = pos
+        self.pos_x, self.pos_y = pos[0]
+        self.start_pos = pos[0]
+        self.pos = pos
         self.level = level
 
-        self.delay = 300
+        self.patrol = patrol
+        if self.patrol:
+            self.patrol_coord = self.pos[0]
+
+        self.delay = 600
         pygame.time.set_timer(ENEMY_EVENT_TYPE, self.delay)
         self.frames = []
         self.cut_sheet(sheet, size[0], size[1])
@@ -434,7 +440,6 @@ class Game:  # Класс, объединяющий уровень, против
         if pygame.sprite.spritecollideany(self.player, enemy_group):
             self.decrease_live()
 
-
     def check_tile(self):  # Функция реагирует на некоторые клетки
         if self.level.get_tile_id(self.player.get_pos()) == self.level.finish_tile:  # Реакция в случае попадания на победную плитку
             win_window()
@@ -445,12 +450,18 @@ class Game:  # Класс, объединяющий уровень, против
             self.decrease_live()
 
     def move_enemy(self, enemy):  # Отвечает за перемещение противника-преследователя
-        next_position = self.level.find_path_step(enemy.get_pos(), self.player.get_pos())
-        for i in self.enemy_list:
-            t_pos = i.get_pos()
-            if t_pos == next_position:
-                return
-        enemy.pos_x, enemy.pos_y = next_position
+        if enemy.patrol:
+            next_position = self.level.find_path_step(enemy.get_pos(), enemy.patrol_coord)
+            if next_position == enemy.get_pos():
+                enemy.patrol_coord = enemy.pos[(enemy.pos.index(enemy.patrol_coord) + 1) % len(enemy.pos)]
+            enemy.pos_x, enemy.pos_y = next_position
+        else:
+            next_position = self.level.find_path_step(enemy.get_pos(), self.player.get_pos())
+            for i in self.enemy_list:
+                t_pos = i.get_pos()
+                if t_pos == next_position and not i.patrol:
+                    return
+            enemy.pos_x, enemy.pos_y = next_position
 
     def decrease_live(self):
         global number_of_lives
@@ -461,7 +472,6 @@ class Game:  # Класс, объединяющий уровень, против
         self.player.set_pos(self.player.start_pos)
         for i in self.enemy_list:
             i.set_pos(i.start_pos)
-
 
 
 class Particle(pygame.sprite.Sprite):
@@ -620,7 +630,6 @@ def win_window():
         clock.tick(50)
 
 
-
 def game_over():  # окно проигрыша
     global number_of_lives, flPause, vol
     replay_button = Button(120, 65, (190, 233, 221), (180, 255, 235))  # создание кнопок переиграть и вернуться в меню
@@ -727,7 +736,14 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
                             'free_tiles': [27, 30, 59, 44], # Свободные плитки
                             'win_tile': 44, # Победная плитка
                             'death_tiles': [], # Смертельные плитки
-                            'enemies_list': [(1, 1), (18, 1), (1, 18), (18, 18)],
+                            'enemies_list': [[True, [(2, 17), (2, 15), (7, 15), (7, 17)]],
+                                             [True, [(1, 14), (6, 14), (6, 12), (1, 12)]],
+                                             [True, [(2, 17), (2, 15), (17, 17), (17, 15)]],
+                                             [True, [(18, 14), (13, 14), (13, 12), (18, 12)]],
+                                             [True, [(13, 9), (13, 7), (18, 7), (18, 9)]],
+                                             [True, [(6, 9), (6, 7), (1, 7), (1, 9)]],
+                                             [False, [(1, 18)]],
+                                             [False, [(18, 18)]]],
                             # Список координат появления противников
                             'enemy_image': load_image('winter_map\Yeti.png'),  # Картинка противника
                             'enemy_size': (6, 8),
@@ -765,7 +781,7 @@ def start_game(name_level):
     player = Player(gb['player_image'], gb['player'])
     enemies = []
     for i in gb['enemies_list']:
-        enemies.append(Enemy(i, level, gb['enemy_image'], gb['enemy_size']))
+        enemies.append(Enemy(i[1], level, gb['enemy_image'], gb['enemy_size'], i[0]))
     game = Game(level, player, enemies)
 
     menu_button = Button(50, 45, (190, 233, 221), (180, 255, 235))
@@ -831,7 +847,7 @@ def start_game(name_level):
                 for i in game.enemy_list:
                     game.move_enemy(i)
                     i.update_frame()
-            if event.type == COUNTDOWN_EVENT_TYPE: # ДАША: счётчик времени
+            if event.type == COUNTDOWN_EVENT_TYPE:  # ДАША: счётчик времени
                 countdown -= 1
                 print(countdown)
                 if countdown <= 0:
@@ -881,8 +897,7 @@ def start_game(name_level):
         screen.blit(text, text_rect)
 
         font = pygame.font.Font(None, 50)
-        text = font.render(str(game.level.points), True, (0, 0, 0)) # ВАНЯ 150 нужно заменить на количесво собранных очков
-        screen.blit(text, (560, 652))
+        text = font.render(str(game.level.points), True, (0, 0, 0))
 
         all_sprites_menu.draw(screen)
         all_sprites_play.draw(screen)
