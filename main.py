@@ -19,6 +19,7 @@ screen = pygame.display.set_mode(size)
 GRAVITY = 1.5
 ENEMY_EVENT_TYPE = pygame.USEREVENT + 1
 COUNTDOWN_EVENT_TYPE = pygame.USEREVENT + 2
+ANIMATION_UPDATE_EVENT_TYPE = pygame.USEREVENT + 3
 
 fullname1 = os.path.join('data', 'музыка1.mp3')
 pygame.mixer.music.load(fullname1)
@@ -415,6 +416,9 @@ class Game:  # Класс, объединяющий уровень, против
         self.player = player
         self.enemy_list = enemy_list
 
+        self.delay = 300
+        pygame.time.set_timer(ANIMATION_UPDATE_EVENT_TYPE, self.delay)
+
     def render(self):  # Общая прорисовка: Вызывает метод render у всех зависимых объектов
         self.level.render()
         self.player.render(self.level)
@@ -422,6 +426,11 @@ class Game:  # Класс, объединяющий уровень, против
             i.render()
         self.check_tile()
         self.check_collide()
+
+    def update_animation(self):
+        for i in self.enemy_list:
+            i.update_frame()
+
 
     def move_player(self):  # Отвечает за перемещение игрока
         next_x, next_y = self.player.get_pos()
@@ -743,7 +752,7 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
                                              [True, [(13, 9), (13, 7), (18, 7), (18, 9)]],
                                              [True, [(6, 9), (6, 7), (1, 7), (1, 9)]],
                                              [False, [(1, 18)]],
-                                             [False, [(18, 18)]]],
+                                             [False, [(18, 1)]]],
                             # Список координат появления противников
                             'enemy_image': load_image('winter_map\Yeti.png'),  # Картинка противника
                             'enemy_size': (6, 8),
@@ -852,6 +861,8 @@ def start_game(name_level):
                 print(countdown)
                 if countdown <= 0:
                     game_over()
+            if event.type == ANIMATION_UPDATE_EVENT_TYPE:
+                game.update_animation()
             elif event.type == pygame.KEYDOWN:
                 game.move_player()
 
