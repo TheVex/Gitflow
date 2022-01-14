@@ -60,8 +60,8 @@ sprite.rect.y = 645
 
 
 def create_particles(position):
-    particle_count = 20  # количество создаваемых частиц
-    numbers = range(-5, 6)  # возможные скорости
+    particle_count = 1  # количество создаваемых частиц
+    numbers = range(-5, 2)  # возможные скорости
     for _ in range(particle_count):
         Particle(position, random.choice(numbers), random.choice(numbers))
 
@@ -436,12 +436,7 @@ class Game:  # Класс, объединяющий уровень, против
 
 
     def check_tile(self):  # Функция реагирует на некоторые клетки
-        global amount_of_animation # ДАША
         if self.level.get_tile_id(self.player.get_pos()) == self.level.finish_tile:  # Реакция в случае попадания на победную плитку
-            while amount_of_animation != 0:  # С этим теперь возиться тебе
-                amount_of_animation -= 1  # Кол-во заработанных очков находится в переменной self.level.points
-                create_particles((random.randint(-50, 650), random.randint(-100, 100)))
-                clock.tick(100)
             win_window()
         elif self.level.get_tile_id(self.player.get_pos()) in self.level.collectible_tiles.keys() and\
                 self.player.get_pos() in self.level.collectible_list.keys():
@@ -557,9 +552,30 @@ def rule_window():  # окно с правилами игры
         pygame.display.flip()
 
 
-def win_window():  # окно с правилами игры
+def win_window():
     global flPause, vol
-    back_button = Button(75, 60, (190, 233, 221), (180, 255, 235))  # оздание кнопки вернуться в меню
+    replay_button = Button(120, 65, (190, 233, 221), (180, 255, 235))  # создание кнопок переиграть и вернуться в меню
+    menu_button = Button(120, 65, (190, 233, 221), (180, 255, 235))
+    all_sprites_game_over = pygame.sprite.Group()
+    fullname = os.path.join('Общие картинки', 'Меню71.png')
+    fullname = os.path.join('Картинки', fullname)
+    sprite = pygame.sprite.Sprite()
+    image = load_image(fullname, -1)
+    sprite.image = pygame.transform.scale(image, (90, 70))
+    sprite.rect = sprite.image.get_rect()
+    all_sprites_game_over.add(sprite)
+    sprite.rect.x = 193
+    sprite.rect.y = 395
+
+    fullname = os.path.join('Общие картинки', 'переиграть3.png')
+    fullname = os.path.join('Картинки', fullname)
+    sprite = pygame.sprite.Sprite()
+    image = load_image(fullname, -1)
+    sprite.image = pygame.transform.scale(image, (140, 60))
+    sprite.rect = sprite.image.get_rect()
+    all_sprites_game_over.add(sprite)
+    sprite.rect.x = 340
+    sprite.rect.y = 400
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -579,9 +595,30 @@ def win_window():  # окно с правилами игры
                     vol += 0.1
                     pygame.mixer.music.set_volume(vol)
         screen.blit(menu_bckgr, (0, 0))
-        back_button.draw(20, 580, '<--', show_menu, 40)
-        pygame.draw.rect(screen, (180, 255, 235), (19, 579, 77, 62), 3)
+
+        font_type = os.path.join('data', 'PingPong.ttf')
+        font = pygame.font.Font(font_type, 90)
+        text = font.render('You win ;)', True, (16, 17, 18))
+        text_rect = text.get_rect(center=(320, 330))
+        screen.blit(text, text_rect)
+        font_type = ''  # Ваня эта строчка серая, когда проект будут проверять, ее могут заметить, но без этой строчки при полном закрытии окнаб выходит ошибки в консоль
+        # Это из-за того что я открывала документ со шрифтом. Я хз что делать
+
+        replay_button.draw(350, 400, '', replay_the_level, 40)
+        pygame.draw.rect(screen, (180, 255, 235), (349, 399, 122, 67), 3)
+
+        menu_button.draw(180, 400, '', show_menu, 40)  # Даша
+        pygame.draw.rect(screen, (180, 255, 235), (179, 399, 122, 67), 3)
+
+        create_particles((random.randint(-50, 650), random.randint(-100, 500)))
+
+        all_sprites_game_over.draw(screen)
+        asterisks.update()
+        asterisks.draw(screen)
+
         pygame.display.flip()
+        clock.tick(50)
+
 
 
 def game_over():  # окно проигрыша
@@ -711,12 +748,11 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
 
 
 def start_game(name_level):
-    global number_of_cells, screen_rect, number_of_lives, vol, flPause, amount_of_animation
+    global number_of_cells, screen_rect, number_of_lives, vol, flPause
     global all_sprites, player_group, enemy_group, collectible_group, asterisks, countdown
 
     number_of_lives = 3
 
-    amount_of_animation = 100  # количество прокруток анимации победы
     all_sprites = pygame.sprite.Group()
     player_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
