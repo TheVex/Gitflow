@@ -898,6 +898,7 @@ def start_game(name_level):
 
         font = pygame.font.Font(None, 50)
         text = font.render(str(game.level.points), True, (0, 0, 0))
+        screen.blit(text, (560, 652))
 
         all_sprites_menu.draw(screen)
         all_sprites_play.draw(screen)
