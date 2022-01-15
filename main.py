@@ -19,6 +19,7 @@ screen = pygame.display.set_mode(size)
 GRAVITY = 1.5
 ENEMY_EVENT_TYPE = pygame.USEREVENT + 1
 COUNTDOWN_EVENT_TYPE = pygame.USEREVENT + 2
+UPDATE_ANIMATION_EVENT = pygame.USEREVENT + 3
 
 fullname1 = os.path.join('data', 'музыка1.mp3')
 pygame.mixer.music.load(fullname1)
@@ -338,11 +339,28 @@ class Level:  # Класс игрового поля
 
 
 class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
-    def __init__(self, name, position):
+    def __init__(self, pos, sheet, size):
         super(Player, self).__init__(player_group, all_sprites)
-        self.pos_x, self.pos_y = position
-        self.start_pos = position
-        self.image = load_image(name)
+        self.pos_x, self.pos_y = pos
+        self.start_pos = pos
+
+        self.frames = []
+        self.cut_sheet(sheet, size[0], size[1])
+        self.cur_frame = 0
+        self.image = self.frames[self.cur_frame]
+
+    def cut_sheet(self, sheet, columns, rows):  # Создаёт список кадров для анимации
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+        for j in range(1):
+            for i in range(5):
+                frame_location = (self.rect.w * i, self.rect.h * j)
+                self.frames.append(sheet.subsurface(pygame.Rect(
+                    frame_location, self.rect.size)))
+
+    def update_frame(self):  # Анимирует игрока. Вызывается когда игрок двигается
+        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
+        self.image = self.frames[self.cur_frame]
 
     def get_pos(self):  # Возвращает координаты игрока
         return self.pos_x, self.pos_y
@@ -434,7 +452,7 @@ class Game:  # Класс, объединяющий уровень, против
             next_x += 1
         elif pygame.key.get_pressed()[pygame.K_DOWN]:
             next_y += 1
-            print(self.level.get_tile_id((next_x, next_y)))
+        print(self.level.get_tile_id((next_x, next_y)))
         if self.level.is_free((next_x, next_y)):  # проверка, может ли игрок наступить на плитку
             self.player.set_pos((next_x, next_y))
 
@@ -464,7 +482,6 @@ class Game:  # Класс, объединяющий уровень, против
                 if t_pos == next_position and not i.patrol:
                     return
             enemy.pos_x, enemy.pos_y = next_position
-            enemy.update_frame()
 
     def decrease_live(self):
         global number_of_lives
@@ -735,7 +752,8 @@ def start_level_random():  # функция level_random
 
 #    - это словарь который присоединяет все объекты в игре к своим уровням
 GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игрока
-                            'player_image': 'mario.png',  # Картинка игрока
+                            'player_image': load_image('winter_map/Player.png'),  # Картинка игрока
+                            'player_size': (6, 8),
                             'free_tiles': [27, 30, 59, 44], # Свободные плитки
                             'win_tile': 44, # Победная плитка
                             'death_tiles': [], # Смертельные плитки
@@ -753,26 +771,39 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
              # Количество картинок внутри картинки противника по горизонтали и вертикали
 
              'desert_map': {'player': (2, 1),
-                            'player_image': 'mario.png',
-                            'free_tiles': [19, 43, 20, 0, 42, 4, 166], #
+                            'player_image': load_image('desert_map\Gangblanc.png'),
+                            'player_size': (8, 8),
+                            'free_tiles': [19, 43, 20, 0, 42, 4, 166, 434], #
                             'win_tile': 166,
                             'death_tiles': [57, 59, 60, 74, 76, 77, 78, 93, 170, 171, 172, 173, 174, 175, 176],
-                            'enemies_list': [],
-                            'enemy_image': load_image('desert_map\Gangblanc.png'),
-                            'enemy_size': (8, 8),
-                            'points': {4: 50},
+                            'enemies_list': [[True, [(8, 5), (13, 5)]],
+                                             [True, [(13, 7), (8, 7),]],
+                                             [True, [(1, 18), (9, 18)]],
+                                             [True, [(9, 17), (1, 17)]],
+                                             [True, [(4, 3), (6, 3), (6, 9), (4, 9)]],
+                                             [True, [(15, 11), (18, 11), (18, 14), (15, 14)]],
+                                             [True, [(16, 4), (16, 9)]]],
+                            'enemy_image': load_image('desert_map\PirateGrunt.png'),
+                            'enemy_size': (5, 8),
+                            'points': {4: 50, 434: 5},
                             'countdown': 120},
 
              'city_map': {'player': (1, 9),
-                            'player_image': 'mario.png',
-                            'free_tiles': [0, 90],  #
-                            'win_tile': 90,
-                            'death_tiles': [57, 59, 60, 74, 76, 77, 78, 93, 170, 171, 172, 173, 174, 175, 176],
-                            'enemies_list': [],
-                            'enemy_image': load_image('desert_map\Gangblanc.png'),
-                            'enemy_size': (8, 8),
-                            'points': {4: 50},
-                            'countdown': 120}}
+                          'player_image': load_image('city_map\Arthax.png'),
+                          'player_size': (5, 8),
+                          'free_tiles': [0, 90],  #
+                          'win_tile': 90,
+                          'death_tiles': [57, 59, 60, 74, 76, 77, 78, 93, 170, 171, 172, 173, 174, 175, 176],
+                          'enemies_list': [[False, [(4, 18)]],
+                                           [True, [(3, 7), (13, 7), (13, 9), (3, 9)]],
+                                           [True, [(16, 4), (16, 10)]],
+                                           [True, [(3, 2), (14, 2)]],
+                                           [True, [(12, 12), (16, 12), (16, 16), (12, 16)]],
+                                           [False, [(18, 5)]]],
+                          'enemy_image': load_image('city_map\Axeman.png'),
+                          'enemy_size': (6, 6),
+                          'points': {4: 50},
+                          'countdown': 120}}
 
 
 def start_game(name_level):
@@ -790,7 +821,7 @@ def start_game(name_level):
     gb = GAME_BASE[name_level] # Сокращение записи
 
     level = Level(name_level, gb['free_tiles'], gb['win_tile'], gb['points'], gb['death_tiles'])
-    player = Player(gb['player_image'], gb['player'])
+    player = Player(gb['player'], gb['player_image'], gb['player_size'])
     enemies = []
     for i in gb['enemies_list']:
         enemies.append(Enemy(i[1], level, gb['enemy_image'], gb['enemy_size'], i[0]))
@@ -850,6 +881,7 @@ def start_game(name_level):
 
     countdown = gb['countdown']
     pygame.time.set_timer(COUNTDOWN_EVENT_TYPE, 1000)
+    pygame.time.set_timer(UPDATE_ANIMATION_EVENT, 100)
 
     while True:
         for event in pygame.event.get():
@@ -858,6 +890,10 @@ def start_game(name_level):
             if event.type == ENEMY_EVENT_TYPE:
                 for i in game.enemy_list:
                     game.move_enemy(i)
+            if event.type == UPDATE_ANIMATION_EVENT:
+                for i in game.enemy_list:
+                    i.update_frame()
+                player.update_frame()
             if event.type == COUNTDOWN_EVENT_TYPE:  # ДАША: счётчик времени
                 countdown -= 1
                 if countdown <= 0:

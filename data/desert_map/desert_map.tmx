@@ -4,6 +4,8 @@
  <tileset firstgid="163" source="../winter_map/Portal.tsx"/>
  <tileset firstgid="167" source="PineTrees.tsx"/>
  <tileset firstgid="170" source="Cactus.tsx"/>
+ <tileset firstgid="178" source="money.tsx"/>
+ <tileset firstgid="434" source="money.tsx"/>
  <layer id="1" name="Слой тайлов 1" width="20" height="20">
   <data encoding="base64" compression="zlib">
    eJzd0z0OwjAMhmGfJmegAlG1Iz9V/8Z2KSfJzfksEtWKusTxAAzP+sqSbU9EHm5wD3oYlPyX91xg1TtBBZ1RT3YserFxhTqYDXolM0kWM/2iBl4HWmVvhDOswgU2ZZd7D9r/hS2im7v/2PNJk/+nK+i5BP8133ruPXHvSZ9fljSzsYn22079062/ARiTe/4=
@@ -11,7 +13,7 @@
  </layer>
  <layer id="2" name="Слой тайлов 2" width="20" height="20">
   <data encoding="base64" compression="zlib">
-   eJyllN1NAzEQhI10EgXAE6KCpAEQNAAiqQB6OSRq4eF+bKdD9pQd5ctiTghGGp3jc2ZnvPb16YhiHIyjcf7HuDfeGq+N2xVWr5tRn+hct8dc9fUVGhnPFjK0F48fxgvjpdf4yZ9Q8Czp3OcIH/Kw8TWcl1966YLn4nkP8FXCM+PdWs7i6wYn91w60tX+JXiNkO6IzLGX0uOeRo3Yo9nJXm6gtw3vhOhRfYl5Wz6lTZ0KHaFDXiGeud9AfanIS7TOHLVVq2L9gmWflFd4ML6Bj56jBWbX3sa8L8Z38BW6KbXvXEVN5VWtK+MN9J6Md8b9iidiSud5o79F77nxPyGn03dK/paxztzOeB+4Dxq867NnFYf0vb9rXiLGoKe8vPOtuy9fHcaCtD7TKe9fvu8Tfk+Y+wLgGIIy
+   eJyllOttAkEMhI2ElALgV0QHNABKGkgEVBB6OSRqyY97rDepEJ+wtYPxLSg56dPuvcYz571t6Hqw0AqdMPxj3ggrYSn8zqbJej/pyO75ueo2VI7xnUTlXTxPE/USFe3R41mQKb3QtUbNI/piKti9Me9a66MHBn+ZbrPavbnzzJr3B3yxG1PFM2qzPtcqtW/uv2cO9E230x5P9ZIr/pjuezRoZuwl6qF+CnKgNgd5I5850EH/uP6ivH4NPsL6kuk2r7GmQpTPakX1fN43mR+B90o//D8U9Xcn8xPwBbq4jryu1bS8Vmsh4yvofQgb4UDTnpDe5fX+Rr3PSl8SlX3K/HVQcy9sHQe6z2f+Bs1qtEF/a178tc7pWd5n9in87rhWTOubSt6/7O89nPdw7QLViPN6
   </data>
  </layer>
 </map>
