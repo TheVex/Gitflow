@@ -19,7 +19,6 @@ screen = pygame.display.set_mode(size)
 GRAVITY = 1.5
 ENEMY_EVENT_TYPE = pygame.USEREVENT + 1
 COUNTDOWN_EVENT_TYPE = pygame.USEREVENT + 2
-ANIMATION_UPDATE_EVENT_TYPE = pygame.USEREVENT + 3
 
 fullname1 = os.path.join('data', 'музыка1.mp3')
 pygame.mixer.music.load(fullname1)
@@ -221,7 +220,7 @@ def play():
         text_rect = text.get_rect(center=(170, 330))
         screen.blit(text, text_rect)
 
-        start_button.draw(370, 150, '', start_level_jungle, 30)  # Прорисовка кнопок уровней
+        start_button.draw(370, 150, '', start_level_city, 30)  # Прорисовка кнопок уровней
         pygame.draw.rect(screen, (180, 255, 235), (369, 149, 202, 202), 3)
         font = pygame.font.Font(None, 30)
         text = font.render('level "Jungle"', True, (16, 17, 18))
@@ -416,8 +415,6 @@ class Game:  # Класс, объединяющий уровень, против
         self.player = player
         self.enemy_list = enemy_list
 
-        self.delay = 300
-        pygame.time.set_timer(ANIMATION_UPDATE_EVENT_TYPE, self.delay)
 
     def render(self):  # Общая прорисовка: Вызывает метод render у всех зависимых объектов
         self.level.render()
@@ -426,11 +423,6 @@ class Game:  # Класс, объединяющий уровень, против
             i.render()
         self.check_tile()
         self.check_collide()
-
-    def update_animation(self):
-        for i in self.enemy_list:
-            i.update_frame()
-
 
     def move_player(self):  # Отвечает за перемещение игрока
         next_x, next_y = self.player.get_pos()
@@ -442,6 +434,7 @@ class Game:  # Класс, объединяющий уровень, против
             next_x += 1
         elif pygame.key.get_pressed()[pygame.K_DOWN]:
             next_y += 1
+            print(self.level.get_tile_id((next_x, next_y)))
         if self.level.is_free((next_x, next_y)):  # проверка, может ли игрок наступить на плитку
             self.player.set_pos((next_x, next_y))
 
@@ -471,6 +464,7 @@ class Game:  # Класс, объединяющий уровень, против
                 if t_pos == next_position and not i.patrol:
                     return
             enemy.pos_x, enemy.pos_y = next_position
+            enemy.update_frame()
 
     def decrease_live(self):
         global number_of_lives
@@ -719,10 +713,10 @@ def start_level_desert():  # функция level_desert
     start_game('desert_map')
 
 
-def start_level_jungle():  # функция level_jungle
+def start_level_city():  # функция level_city
     global current_level, number_of_lives
-    current_level = 'jungle_map'
-    start_game('jungle_map')
+    current_level = 'city_map'
+    start_game('city_map')
 
 
 def start_level_winter():  # функция level_winter
@@ -745,19 +739,17 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
                             'free_tiles': [27, 30, 59, 44], # Свободные плитки
                             'win_tile': 44, # Победная плитка
                             'death_tiles': [], # Смертельные плитки
-                            'enemies_list': [[True, [(2, 17), (2, 15), (7, 15), (7, 17)]],
-                                             [True, [(1, 14), (6, 14), (6, 12), (1, 12)]],
-                                             [True, [(2, 17), (2, 15), (17, 17), (17, 15)]],
-                                             [True, [(18, 14), (13, 14), (13, 12), (18, 12)]],
+                            'enemies_list': [[True, [(12, 15), (12, 17), (17, 15), (17, 17)]],
+                                             [True, [(7, 15), (7, 17), (2, 17), (2, 15)]],
                                              [True, [(13, 9), (13, 7), (18, 7), (18, 9)]],
                                              [True, [(6, 9), (6, 7), (1, 7), (1, 9)]],
-                                             [False, [(1, 18)]],
+                                             [False, [(1, 1)]],
                                              [False, [(18, 1)]]],
                             # Список координат появления противников
                             'enemy_image': load_image('winter_map\Yeti.png'),  # Картинка противника
                             'enemy_size': (6, 8),
                             'points': {59: 5}, # Количество очков, получаемых при сборе предмета (в виде "ID_предмета: кол_очков")
-                            'countdown': 60}, # Таймер, в секундах
+                            'countdown': 120}, # Таймер, в секундах
              # Количество картинок внутри картинки противника по горизонтали и вертикали
 
              'desert_map': {'player': (2, 1),
@@ -769,7 +761,18 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
                             'enemy_image': load_image('desert_map\Gangblanc.png'),
                             'enemy_size': (8, 8),
                             'points': {4: 50},
-                            'countdown': 60}}
+                            'countdown': 120},
+
+             'city_map': {'player': (1, 9),
+                            'player_image': 'mario.png',
+                            'free_tiles': [0, 90],  #
+                            'win_tile': 90,
+                            'death_tiles': [57, 59, 60, 74, 76, 77, 78, 93, 170, 171, 172, 173, 174, 175, 176],
+                            'enemies_list': [],
+                            'enemy_image': load_image('desert_map\Gangblanc.png'),
+                            'enemy_size': (8, 8),
+                            'points': {4: 50},
+                            'countdown': 120}}
 
 
 def start_game(name_level):
@@ -855,14 +858,10 @@ def start_game(name_level):
             if event.type == ENEMY_EVENT_TYPE:
                 for i in game.enemy_list:
                     game.move_enemy(i)
-                    i.update_frame()
             if event.type == COUNTDOWN_EVENT_TYPE:  # ДАША: счётчик времени
                 countdown -= 1
-                print(countdown)
                 if countdown <= 0:
                     game_over()
-            if event.type == ANIMATION_UPDATE_EVENT_TYPE:
-                game.update_animation()
             elif event.type == pygame.KEYDOWN:
                 game.move_player()
 

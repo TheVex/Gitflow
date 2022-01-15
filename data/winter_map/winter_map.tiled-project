@@ -5,7 +5,8 @@
     "extensionsPath": "extensions",
     "folders": [
         ".",
-        "../desert_map"
+        "../desert_map",
+        "../city_map"
     ],
     "objectTypesFile": ""
 }
