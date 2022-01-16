@@ -4,6 +4,7 @@ import os
 import random
 import pytmx
 import time
+import sqlite3
 
 pygame.init()
 
@@ -113,7 +114,7 @@ def show_menu():  # окно меню
         text = font_type.render('Play', True, (20, 20, 20))
         screen.blit(text, text.get_rect(center=(325, 330)))
 
-        records_button.draw(200, 380, '', play, 38)  # прорисовка кнопок
+        records_button.draw(200, 380, '', record, 38)  # прорисовка кнопок
         pygame.draw.rect(screen, (180, 255, 235), (199, 379, 252, 62), 3)
         font_type = os.path.join('data', 'PingPong.ttf')
         font_type = pygame.font.Font(font_type, 40)
@@ -220,14 +221,14 @@ def play():  # окно для выбора уровня
         start_button.draw(370, 150, '', start_level_city, 30)  # Прорисовка кнопок уровней
         pygame.draw.rect(screen, (180, 255, 235), (369, 149, 202, 202), 3)
         font = pygame.font.Font(None, 30)
-        text = font.render('level "Jungle"', True, (16, 17, 18))
+        text = font.render('level "Village"', True, (16, 17, 18))
         text_rect = text.get_rect(center=(470, 330))
         screen.blit(text, text_rect)
 
         start_button.draw(70, 400, '', start_level_winter, 30)  # Прорисовка кнопок уровней
         pygame.draw.rect(screen, (180, 255, 235), (69, 399, 202, 202), 3)
         font = pygame.font.Font(None, 30)
-        text = font.render('level "Winter""', True, (16, 17, 18))
+        text = font.render('level "Winter"', True, (16, 17, 18))
         text_rect = text.get_rect(center=(170, 580))
         screen.blit(text, text_rect)
 
@@ -539,6 +540,84 @@ class Button:  # создания кнопок
 
         print_text(message=message, x=x + 10, y=y + 10, font_size=font_size)
 
+def record():
+    global flPause, vol
+    menu_button = Button(50, 45, (190, 233, 221), (180, 255, 235))  # создание кнопки вернуться в меню
+    con = sqlite3.connect("results.sqlite")  # подключение бд
+    cur = con.cursor()
+    result = cur.execute("""SELECT * FROM glasses""").fetchall()
+    con.close()
+    winter, village, desert = result[0][1], result[1][1], result[2][1]
+    print(result)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:  # остановка музыки
+                    flPause = not flPause
+                    if flPause:
+                        pygame.mixer.music.pause()
+                    else:
+                        pygame.mixer.music.unpause()
+                elif event.key == pygame.K_a:  # изменение громкости звука
+                    vol -= 0.1
+                    pygame.mixer.music.set_volume(vol)
+                elif event.key == pygame.K_d:
+                    vol += 0.1
+                    pygame.mixer.music.set_volume(vol)
+        screen.blit(menu_bckgr, (0, 0))
+        font = pygame.font.Font(None, 70)  # Надпись 'Лучшие результаты'
+        text_game = font.render('Лучшие результаты', True, (16, 17, 18))
+        text_rect = text_game.get_rect(center=(320, 100))
+        screen.blit(text_game, text_rect)
+        pygame.draw.rect(screen, (180, 255, 235), (70, 130, 500, 2), 0)
+
+        pygame.draw.rect(screen, (180, 255, 235), (150, 300, 340, 2), 0) # прорисовка тпблицы рекордов
+        pygame.draw.rect(screen, (180, 255, 235), (150, 350, 340, 2), 0)
+        pygame.draw.rect(screen, (180, 255, 235), (150, 400, 340, 2), 0)
+        pygame.draw.rect(screen, (180, 255, 235), (150, 450, 340, 2), 0)
+        pygame.draw.rect(screen, (180, 255, 235), (350, 300, 2, 150), 0)
+        pygame.draw.rect(screen, (180, 255, 235), (150, 300, 2, 150), 0)
+        pygame.draw.rect(screen, (180, 255, 235), (490, 300, 2, 150), 0)
+
+        font = pygame.font.Font(None, 35)  # Надпись 'level "Desert"'
+        text_game = font.render('level "Desert"', True, (16, 17, 18))
+        text_rect = text_game.get_rect(center=(250, 325))
+        screen.blit(text_game, text_rect)
+
+        font = pygame.font.Font(None, 35)  # Надпись 'level "Desert"'
+        text_game = font.render('level "Village"', True, (16, 17, 18))
+        text_rect = text_game.get_rect(center=(250, 375))
+        screen.blit(text_game, text_rect)
+
+        font = pygame.font.Font(None, 35)  # Надпись 'level "Desert"'
+        text_game = font.render('level "Winter"', True, (16, 17, 18))
+        text_rect = text_game.get_rect(center=(250, 425))
+        screen.blit(text_game, text_rect)
+
+        font = pygame.font.Font(None, 40)
+        text_game = font.render(str(desert), True, (16, 17, 18))
+        text_rect = text_game.get_rect(center=(420, 325))
+        screen.blit(text_game, text_rect)
+
+        font = pygame.font.Font(None, 40)
+        text_game = font.render(str(village), True, (16, 17, 18))
+        text_rect = text_game.get_rect(center=(420, 375))
+        screen.blit(text_game, text_rect)
+
+        font = pygame.font.Font(None, 40)
+        text_game = font.render(str(winter), True, (16, 17, 18))
+        text_rect = text_game.get_rect(center=(420, 425))
+        screen.blit(text_game, text_rect)
+
+        menu_button.draw(10, 645, '', show_menu, 40)
+        pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
+        all_sprites_menu.draw(screen)
+        pygame.display.flip()
+
+
+
 
 def rule_window():  # окно с правилами игры
     global flPause, vol
@@ -576,7 +655,7 @@ def rule_window():  # окно с правилами игры
             screen.blit((pygame.font.SysFont('constantia', 18).render(x, True, 'BLACK')),
                         (20, 75 + 10 * descriptioncounter))
 
-        menu_button.draw(10, 645, '', show_menu, 40)  # Даша
+        menu_button.draw(10, 645, '', show_menu, 40)
         pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
         all_sprites_menu.draw(screen)
         pygame.display.flip()
@@ -606,7 +685,7 @@ def win_window():  # окно победы
     sprite.rect = sprite.image.get_rect()
     all_sprites_emerald.add(sprite)
     sprite.rect.x = 260
-    prite.rect.y = 395
+    sprite.rect.y = 395
 
     fullname = os.path.join('Общие картинки', 'переиграть3.png')
     fullname = os.path.join('Картинки', fullname)
@@ -617,6 +696,17 @@ def win_window():  # окно победы
     all_sprites_game_over.add(sprite)
     sprite.rect.x = 340
     sprite.rect.y = 450
+
+    con = sqlite3.connect("results.sqlite")  # подключение бд
+    cur = con.cursor()
+    result = cur.execute("""SELECT * FROM glasses
+                    WHERE name = ?""", (current_level,)).fetchall()
+    if final_points > result[0][1]:
+        cur.execute("""UPDATE glasses SET number = ?
+                         WHERE name = ? """, (final_points,current_level)).fetchall()
+        con.commit()
+    con.close()
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -750,7 +840,7 @@ def start_level_winter():  # функция level_winter
 def start_level_random():  # функция level_random
     global current_level, number_of_lives
     number_of_lives = 3
-    random_level = ['winter_map', 'jungle_map', 'desert_map']
+    random_level = ['winter_map', 'city_map', 'desert_map']
     current_level = random.choice(random_level)
     start_game(current_level)
 
