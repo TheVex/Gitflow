@@ -8,19 +8,13 @@ import sqlite3
 
 pygame.init()
 
-all_sprites = pygame.sprite.Group()  # создание групп для разных объектов
-player_group = pygame.sprite.Group()
-enemy_group = pygame.sprite.Group()
-collectible_group = pygame.sprite.Group()
-asterisks = pygame.sprite.Group()
-
 clock = pygame.time.Clock()
 size = width, height = 640, 704
 screen = pygame.display.set_mode(size)
 GRAVITY = 0.5
 ENEMY_EVENT_TYPE = pygame.USEREVENT + 1
 COUNTDOWN_EVENT_TYPE = pygame.USEREVENT + 2
-UPDATE_ANIMATION_EVENT = pygame.USEREVENT + 3
+UPDATE_ANIMATION_TYPE = pygame.USEREVENT + 3
 
 fullname1 = os.path.join('data', 'музыка1.mp3')  # открытие файла с фоновой музыкой
 pygame.mixer.music.load(fullname1)  # подключение фоновой музыки
@@ -284,8 +278,6 @@ class Level:  # Класс игрового поля
         for y in range(
                 self.height):  # Проверяет, является ли клетка доступной для сбора и добавляет в список предметов для сбора
             for x in range(self.width):
-                image = self.tile_map.get_tile_image(x, y,
-                                                     1)  # ВАНЯ, почему горит серым? так должно  быть? на за чистоту кода из-за этого не снимут?
                 pos_tile = self.get_tile_id((x, y))
                 if pos_tile in self.collectible_tiles.keys():
                     self.collectible_list[(x, y)] = Collectible((x, y), self.collectible_tiles[pos_tile])
@@ -349,28 +341,11 @@ class Level:  # Класс игрового поля
 
 
 class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
-    def __init__(self, pos, sheet, size):
+    def __init__(self, pos, image):
         super(Player, self).__init__(player_group, all_sprites)
         self.pos_x, self.pos_y = pos
         self.start_pos = pos
-
-        self.frames = []
-        self.cut_sheet(sheet, size[0], size[1])
-        self.cur_frame = 0
-        self.image = self.frames[self.cur_frame]
-
-    def cut_sheet(self, sheet, columns, rows):  # Создаёт список кадров для анимации
-        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
-                                sheet.get_height() // rows)
-        for j in range(1):
-            for i in range(5):
-                frame_location = (self.rect.w * i, self.rect.h * j)
-                self.frames.append(sheet.subsurface(pygame.Rect(
-                    frame_location, self.rect.size)))
-
-    def update_frame(self):  # Анимирует игрока. Вызывается когда игрок двигается
-        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
-        self.image = self.frames[self.cur_frame]
+        self.image = image
 
     def get_pos(self):  # Возвращает координаты игрока
         return self.pos_x, self.pos_y
@@ -825,30 +800,29 @@ def game_over():  # окно проигрыша
 
 
 def replay_the_level():  # функция "переиграть"
-    global number_of_lives
     start_game(current_level)
 
 
 def start_level_desert():  # функция level_desert
-    global current_level, number_of_lives
+    global current_level
     current_level = 'desert_map'
     start_game('desert_map')
 
 
 def start_level_city():  # функция level_city
-    global current_level, number_of_lives
+    global current_level
     current_level = 'city_map'
     start_game('city_map')
 
 
 def start_level_winter():  # функция level_winter
-    global current_level, number_of_lives
+    global current_level
     current_level = 'winter_map'
     start_game('winter_map')
 
 
 def start_level_random():  # функция level_random
-    global current_level, number_of_lives
+    global current_level
     number_of_lives = 3
     random_level = ['winter_map', 'city_map', 'desert_map']
     current_level = random.choice(random_level)
@@ -856,8 +830,6 @@ def start_level_random():  # функция level_random
 
 #    - это словарь который присоединяет все объекты в игре к своим уровням
 GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игрока
-                            'player_image': load_image('winter_map/Player.png'),  # Картинка игрока
-                            'player_size': (6, 8),
                             'free_tiles': [27, 30, 59, 44],  # Свободные плитки
                             'win_tile': 44,  # Победная плитка
                             'death_tiles': [],  # Смертельные плитки
@@ -876,8 +848,6 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
              # Количество картинок внутри картинки противника по горизонтали и вертикали
 
              'desert_map': {'player': (2, 1),
-                            'player_image': load_image('desert_map\Gangblanc.png'),
-                            'player_size': (8, 8),
                             'free_tiles': [19, 43, 20, 0, 42, 4, 166, 434],  #
                             'win_tile': 166,
                             'death_tiles': [57, 59, 60, 74, 76, 77, 78, 93, 170, 171, 172, 173, 174, 175, 176],
@@ -894,11 +864,9 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
                             'countdown': 120},
 
              'city_map': {'player': (1, 9),
-                          'player_image': load_image('city_map\Arthax.png'),
-                          'player_size': (5, 8),
-                          'free_tiles': [0, 90],  #
-                          'win_tile': 90,
-                          'death_tiles': [57, 59, 60, 74, 76, 77, 78, 93, 170, 171, 172, 173, 174, 175, 176],
+                          'free_tiles': [0, 239, 242, 177, 142, 9],  #
+                          'win_tile': 9,
+                          'death_tiles': [142],
                           'enemies_list': [[False, [(4, 18)]],
                                            [True, [(3, 7), (13, 7), (13, 9), (3, 9)]],
                                            [True, [(16, 4), (16, 10)]],
@@ -907,7 +875,7 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
                                            [False, [(18, 5)]]],
                           'enemy_image': load_image('city_map\Axeman.png'),
                           'enemy_size': (6, 6),
-                          'points': {4: 50},
+                          'points': {242: 50, 239: 5},
                           'countdown': 120}}
 
 
@@ -918,8 +886,8 @@ def start_game(name_level): # функция игрового процесса
     number_of_lives = 3 # количество жизней
     final_points = 0 # кол-во окончательных очков
 
-    all_sprites = pygame.sprite.Group() # ВАНЯ эти же группы создаютя здесь и в самом начале, наверное надо от куда-то их убрать
-    player_group = pygame.sprite.Group() # но я не знаю от куда
+    all_sprites = pygame.sprite.Group()
+    player_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
     collectible_group = pygame.sprite.Group()
     asterisks = pygame.sprite.Group()
@@ -927,7 +895,7 @@ def start_game(name_level): # функция игрового процесса
     gb = GAME_BASE[name_level]  # Сокращение записи
 
     level = Level(name_level, gb['free_tiles'], gb['win_tile'], gb['points'], gb['death_tiles'])
-    player = Player(gb['player'], gb['player_image'], gb['player_size'])
+    player = Player(gb['player'], load_image('mario.png', colorkey=-1))
     enemies = []
     for i in gb['enemies_list']:
         enemies.append(Enemy(i[1], level, gb['enemy_image'], gb['enemy_size'], i[0]))
@@ -982,7 +950,7 @@ def start_game(name_level): # функция игрового процесса
 
     countdown = gb['countdown']
     pygame.time.set_timer(COUNTDOWN_EVENT_TYPE, 1000)
-    pygame.time.set_timer(UPDATE_ANIMATION_EVENT, 100)
+    pygame.time.set_timer(UPDATE_ANIMATION_TYPE, 1000)
 
     while True:
         for event in pygame.event.get():
@@ -991,10 +959,9 @@ def start_game(name_level): # функция игрового процесса
             if event.type == ENEMY_EVENT_TYPE:
                 for i in game.enemy_list:
                     game.move_enemy(i)
-            if event.type == UPDATE_ANIMATION_EVENT:
+            if event.type == UPDATE_ANIMATION_TYPE:
                 for i in game.enemy_list:
                     i.update_frame()
-                player.update_frame()
             if event.type == COUNTDOWN_EVENT_TYPE:  # счётчик времени
                 countdown -= 1
                 if countdown <= 0:
@@ -1044,7 +1011,7 @@ def start_game(name_level): # функция игрового процесса
         text = font.render(str(game.level.points), True, (0, 0, 0))
         screen.blit(text, (560, 652))
 
-        final_points = game.level.points + countdown * 2 + number_of_lives * 50 # ВАНЯ это финальное кол-во очков,
+        final_points = game.level.points + countdown * 2 + number_of_lives * 100 # ВАНЯ это финальное кол-во очков,
         # то сколько дадут время и жизни я пока взяла рандомно
 
         all_sprites_menu.draw(screen)

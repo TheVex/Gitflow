@@ -3,17 +3,32 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Winter_map.tmx",
+    "activeFile": "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/desert_map.tmx",
     "expandedProjectPaths": [
-        "."
+        ".",
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/jungle_map",
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map",
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map"
     ],
     "file.lastUsedOpenFilter": "Все файлы (*)",
     "fileStates": {
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/001-money.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/Chest.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
         "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/Grass.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/Portal.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/PurpleDocks.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
@@ -34,6 +49,10 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/PurpleTower.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
         "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/PurpleWell.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
@@ -44,6 +63,10 @@
             "scaleInEditor": 1
         },
         "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/Rocks.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/TexturedGrass.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
@@ -59,7 +82,38 @@
                 "y": 318
             }
         },
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/city_map_2.tmx": {
+            "scale": 1.341875,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 304.424778761062,
+                "y": 318.2114578481602
+            }
+        },
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/money.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/AllBuildings-Preview.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/Beach Tileset.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
         "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/Cactus.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/DeadGrass.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/PineTrees.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/Portal.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
@@ -69,13 +123,14 @@
         },
         "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/desert_map.tmx": {
             "scale": 1,
-            "selectedLayer": 0,
+            "selectedLayer": 1,
             "viewCenter": {
                 "x": 305.5,
-                "y": 350
+                "y": 303
             }
         },
         "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/money.tsx": {
+            "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/jungle_map/jungle_map.tmx": {
@@ -149,27 +204,25 @@
     "map.tileWidth": 32,
     "map.width": 20,
     "openFiles": [
-        "Winter_map.tmx",
-        "Keep.tsx",
-        "PineTrees.tsx",
-        "Portal.tsx",
-        "Tower.tsx",
-        "Winter.tsx"
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/desert_map.tmx",
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/Cactus.tsx",
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/money.tsx",
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/AllBuildings-Preview.tsx"
     ],
     "project": "winter_map.tiled-project",
     "recentFiles": [
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/AllBuildings-Preview.tsx",
         "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/money.tsx",
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/Cactus.tsx",
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/desert_map.tmx",
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/DeadGrass.tsx",
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/Portal.tsx",
+        "Winter_map.tmx",
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/Beach Tileset.tsx",
         "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/desert_map/coin.tsx",
-        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/city_map.tmx",
-        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/PurpleHouses.tsx",
-        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/PurpleMarket.tsx",
-        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/PurpleResources.tsx",
-        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/PurpleTaverns.tsx",
-        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/PurpleWell.tsx",
-        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/PurpleWorkshops.tsx",
-        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/Rocks.tsx",
-        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/Portal.tsx",
-        "Winter_map.tmx"
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/Trees.tsx",
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/Chest.tsx",
+        "C:/Users/Ivan/PycharmProjects/Git_project/Gitflow/data/city_map/001-money.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.margin": 0,
