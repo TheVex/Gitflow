@@ -245,7 +245,7 @@ def play():  # окно для выбора уровня
         start_button.draw(370, 400, '', start_level_random, 30)  # Прорисовка кнопок уровней
         pygame.draw.rect(screen, (180, 255, 235), (369, 399, 202, 202), 3)
         font = pygame.font.Font(None, 30)
-        text = font.render('random level"', True, (16, 17, 18))
+        text = font.render('random level', True, (16, 17, 18))
         text_rect = text.get_rect(center=(470, 580))
         screen.blit(text, text_rect)
 
