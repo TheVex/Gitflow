@@ -161,6 +161,16 @@ def play():  # окно для выбора уровня
     sprite.rect.x = 85
     sprite.rect.y = 170
 
+    fullname = os.path.join('Джунгли', 'пугало.png')  # открытие картинок, находящихся на кнопках
+    fullname = os.path.join('Картинки', fullname)
+    sprite = pygame.sprite.Sprite()
+    image = load_image(fullname)
+    sprite.image = pygame.transform.scale(image, (150, 150))
+    sprite.rect = sprite.image.get_rect()
+    all_sprites_button.add(sprite)
+    sprite.rect.x = 400
+    sprite.rect.y = 170
+
     fullname = os.path.join('Зима', 'Снеговик1.jpg')
     fullname = os.path.join('Картинки', fullname)
     sprite = pygame.sprite.Sprite()
@@ -171,14 +181,14 @@ def play():  # окно для выбора уровня
     sprite.rect.x = 100
     sprite.rect.y = 420
 
-    fullname = os.path.join('Общие картинки', 'вопрос.jpg')
+    fullname = os.path.join('Общие картинки', 'вопрос.png')
     fullname = os.path.join('Картинки', fullname)
     sprite = pygame.sprite.Sprite()
-    image = load_image(fullname, -1)
+    image = load_image(fullname)
     sprite.image = pygame.transform.scale(image, (140, 140))
     sprite.rect = sprite.image.get_rect()
     all_sprites_button.add(sprite)
-    sprite.rect.x = 400
+    sprite.rect.x = 415
     sprite.rect.y = 420
 
     show = True
