@@ -567,14 +567,14 @@ def rule_window():  # окно с правилами игры
         screen.blit(menu_bckgr, (0, 0))
         font = pygame.font.Font(None, 70)  # Надпись 'Правила игры'
         text_game = font.render('Правила игры', True, (16, 17, 18))
-        text_rect = text_game.get_rect(center=(320, 70))
+        text_rect = text_game.get_rect(center=(320, 50))
         screen.blit(text_game, text_rect)
-        pygame.draw.rect(screen, (180, 255, 235), (70, 100, 500, 2), 0)
+        pygame.draw.rect(screen, (180, 255, 235), (70, 80, 500, 2), 0)
         descriptioncounter = 0  # расстояние между строчками
         for x in text.split('\n'):  # вывод текста из txt на экран
-            descriptioncounter += 2
-            screen.blit((pygame.font.SysFont('constantia', 20).render(x, True, 'BLACK')),
-                        (80, 100 + 10 * descriptioncounter))
+            descriptioncounter += 2.1
+            screen.blit((pygame.font.SysFont('constantia', 18).render(x, True, 'BLACK')),
+                        (20, 75 + 10 * descriptioncounter))
 
         menu_button.draw(10, 645, '', show_menu, 40)  # Даша
         pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
@@ -606,7 +606,7 @@ def win_window():  # окно победы
     sprite.rect = sprite.image.get_rect()
     all_sprites_emerald.add(sprite)
     sprite.rect.x = 260
-    sprite.rect.y = 395
+    prite.rect.y = 395
 
     fullname = os.path.join('Общие картинки', 'переиграть3.png')
     fullname = os.path.join('Картинки', fullname)
@@ -895,7 +895,7 @@ def start_game(name_level): # функция игрового процесса
                 for i in game.enemy_list:
                     i.update_frame()
                 player.update_frame()
-            if event.type == COUNTDOWN_EVENT_TYPE:  # ДАША: счётчик времени
+            if event.type == COUNTDOWN_EVENT_TYPE:  # счётчик времени
                 countdown -= 1
                 if countdown <= 0:
                     game_over()
