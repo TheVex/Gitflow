@@ -2,20 +2,20 @@
 <map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="left-up" width="20" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="1">
  <tileset firstgid="1" source="Beach Tileset.tsx"/>
  <tileset firstgid="163" source="../winter_map/Portal.tsx"/>
- <tileset firstgid="167" source="PineTrees.tsx"/>
- <tileset firstgid="170" source="Cactus.tsx"/>
- <tileset firstgid="178" source="money.tsx"/>
- <tileset firstgid="179" source="../city_map/Chest.tsx"/>
- <tileset firstgid="182" source="DeadGrass.tsx"/>
- <tileset firstgid="188" source="AllBuildings-Preview.tsx"/>
+ <tileset firstgid="167" source="Cactus.tsx"/>
+ <tileset firstgid="175" source="../city_map/Chest.tsx"/>
+ <tileset firstgid="178" source="DeadGrass.tsx"/>
+ <tileset firstgid="184" source="AllBuildings-Preview.tsx"/>
+ <tileset firstgid="376" source="002-diamond.tsx"/>
+ <tileset firstgid="377" source="003-diamond-ring.tsx"/>
  <layer id="1" name="Слой тайлов 1" width="20" height="20">
   <data encoding="base64" compression="zlib">
-   eJzbxsDAsG0Uj+JRPIpH8SgmEQMAHzUccA==
+   eJzbxMDAsGkUj+JRPIpH8SgmEQMAiYkWMA==
   </data>
  </layer>
  <layer id="2" name="Слой тайлов 2" width="20" height="20">
   <data encoding="base64" compression="zlib">
-   eJxby8DAsJbK+AUQv2TADtbgYCMDmH6YeT+A+CdUjpURgYk1D6YfZh61ADHmEeM+Ys1bg8U8fGbS232kguHiPmRMqXmkgFHzRs0jxzxCeDEUE6MWAAd1Rvc=
+   eJytlE0SwiAMhYOL3qDcwKN5BzyPq/ZU/u793RvGvjFmAkTt4psSJu9BCHQkonFmjsyJWQeiJMjxQO94KORAD78785h0QZAMPysHevjpNX8he8BP7kFj7a+Up/0WAuRov1qup17v/mS91hl70Brp9+/+pF/X6Js11nTCL/J4GV7fFD5j9ADUcuG3Zw5GLXgPqwn9XgD08Lsyt8bZ1IDeui9YP1b0UeVa90WeUY57od/y3E5o+2BrvH5nnrt84Td3vaX+eqn11/qHlsaoS/e3xWbCk/sEqTzPgQ==
   </data>
  </layer>
 </map>

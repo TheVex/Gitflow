@@ -830,7 +830,7 @@ def start_level_random():  # функция level_random
 
 #    - это словарь который присоединяет все объекты в игре к своим уровням
 GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игрока
-                            'free_tiles': [27, 30, 59, 44],  # Свободные плитки
+                            'free_tiles': [27, 30, 61, 62, 44],  # Свободные плитки
                             'win_tile': 44,  # Победная плитка
                             'death_tiles': [],  # Смертельные плитки
                             'enemies_list': [[True, [(12, 15), (12, 17), (17, 15), (17, 17)]],
@@ -842,14 +842,14 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
                             # Список координат появления противников
                             'enemy_image': load_image('winter_map\Yeti.png'),  # Картинка противника
                             'enemy_size': (6, 8),
-                            'points': {59: 5},
+                            'points': {61: 5, 62: 50},
                             # Количество очков, получаемых при сборе предмета (в виде "ID_предмета: кол_очков")
                             'countdown': 120},  # Таймер, в секундах
              # Количество картинок внутри картинки противника по горизонтали и вертикали
 
-             'desert_map': {'player': (2, 1),
-                            'free_tiles': [19, 43, 20, 0, 42, 4, 166, 434],  #
-                            'win_tile': 166,
+             'desert_map': {'player': (9, 1),
+                            'free_tiles': [19, 43, 20, 0, 42, 4, 163, 434],
+                            'win_tile': 163,
                             'death_tiles': [57, 59, 60, 74, 76, 77, 78, 93, 170, 171, 172, 173, 174, 175, 176],
                             'enemies_list': [[True, [(8, 5), (13, 5)]],
                                              [True, [(13, 7), (8, 7), ]],
@@ -858,8 +858,8 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
                                              [True, [(4, 3), (6, 3), (6, 9), (4, 9)]],
                                              [True, [(15, 11), (18, 11), (18, 14), (15, 14)]],
                                              [True, [(16, 4), (16, 9)]]],
-                            'enemy_image': load_image('desert_map\PirateGrunt.png'),
-                            'enemy_size': (5, 8),
+                            'enemy_image': load_image('desert_map\Shaman.png'),
+                            'enemy_size': (6, 8),
                             'points': {4: 50, 434: 5},
                             'countdown': 120},
 
@@ -950,7 +950,7 @@ def start_game(name_level): # функция игрового процесса
 
     countdown = gb['countdown']
     pygame.time.set_timer(COUNTDOWN_EVENT_TYPE, 1000)
-    pygame.time.set_timer(UPDATE_ANIMATION_TYPE, 1000)
+    pygame.time.set_timer(UPDATE_ANIMATION_TYPE, 200)
 
     while True:
         for event in pygame.event.get():
@@ -1011,8 +1011,7 @@ def start_game(name_level): # функция игрового процесса
         text = font.render(str(game.level.points), True, (0, 0, 0))
         screen.blit(text, (560, 652))
 
-        final_points = game.level.points + countdown * 2 + number_of_lives * 100 # ВАНЯ это финальное кол-во очков,
-        # то сколько дадут время и жизни я пока взяла рандомно
+        final_points = game.level.points + countdown * 2 + number_of_lives * 100
 
         all_sprites_menu.draw(screen)
         all_sprites_play.draw(screen)
