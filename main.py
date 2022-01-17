@@ -31,15 +31,15 @@ def load_image(name, colorkey=None):  # Функция для загрузки �
     if not os.path.isfile(fn):  # если файл не существует, то выходим
         print(f"Файл с изображением '{fn}' не найден")
         sys.exit()
-    image = pygame.image.load(fn)
+    im = pygame.image.load(fn)
     if colorkey is not None:
-        image = image.convert()
+        im = im.convert()
         if colorkey == -1:
-            colorkey = image.get_at((0, 0))
-        image.set_colorkey(colorkey)
+            colorkey = im.get_at((0, 0))
+        im.set_colorkey(colorkey)
     else:
-        image = image.convert_alpha()
-    return image
+        im = im.convert_alpha()
+    return im
 
 
 fullname = os.path.join('Общие картинки', 'Меню71.png')  # картинка находящаяся на кнопке выхода в меню
@@ -828,6 +828,7 @@ def start_level_random():  # функция level_random
     current_level = random.choice(random_level)
     start_game(current_level)
 
+
 #    - это словарь который присоединяет все объекты в игре к своим уровням
 GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игрока
                             'free_tiles': [27, 30, 61, 62, 44],  # Свободные плитки
@@ -848,34 +849,35 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
              # Количество картинок внутри картинки противника по горизонтали и вертикали
 
              'desert_map': {'player': (9, 1),
-                            'free_tiles': [19, 43, 20, 0, 42, 4, 163, 434],
+                            'free_tiles': [19, 43, 20, 0, 42, 4, 163, 376, 377],
                             'win_tile': 163,
-                            'death_tiles': [57, 59, 60, 74, 76, 77, 78, 93, 170, 171, 172, 173, 174, 175, 176],
-                            'enemies_list': [[True, [(8, 5), (13, 5)]],
-                                             [True, [(13, 7), (8, 7), ]],
-                                             [True, [(1, 18), (9, 18)]],
-                                             [True, [(9, 17), (1, 17)]],
-                                             [True, [(4, 3), (6, 3), (6, 9), (4, 9)]],
-                                             [True, [(15, 11), (18, 11), (18, 14), (15, 14)]],
-                                             [True, [(16, 4), (16, 9)]]],
+                            'death_tiles': [169, 170],
+                            'enemies_list': [[True, [(5, 9), (9, 9), (9, 7), (5, 7)]],
+                                             [True, [(14, 9), (10, 9), (10, 7), (14, 7)]],
+                                             [True, [(5, 12), (5, 17), (8, 17), (8, 12)]],
+                                             [True, [(14, 12), (14, 17), (11, 17), (11, 12)]],
+                                             [False, [(4, 18)]],
+                                             [False, [(15, 18)]]],
                             'enemy_image': load_image('desert_map\Shaman.png'),
                             'enemy_size': (6, 8),
-                            'points': {4: 50, 434: 5},
+                            'points': {377: 50, 376: 5},
                             'countdown': 120},
 
              'city_map': {'player': (1, 9),
-                          'free_tiles': [0, 239, 242, 177, 142, 9],  #
+                          'free_tiles': [0, 238, 241, 177, 179, 142, 9],  #
                           'win_tile': 9,
                           'death_tiles': [142],
-                          'enemies_list': [[False, [(4, 18)]],
-                                           [True, [(3, 7), (13, 7), (13, 9), (3, 9)]],
-                                           [True, [(16, 4), (16, 10)]],
-                                           [True, [(3, 2), (14, 2)]],
-                                           [True, [(12, 12), (16, 12), (16, 16), (12, 16)]],
-                                           [False, [(18, 5)]]],
+                          'enemies_list': [[True, [(11, 7), (17, 7), (17, 12), (11, 12)]],
+                                           [True, [(3, 8), (3, 1)]],
+                                           [True, [(14, 15), (14, 17), (17, 17), (17, 15)]],
+                                           [True, [(14, 4), (14, 2), (17, 2), (17, 4)]],
+                                           [True, [(3, 11), (3, 18)]],
+                                           [True, [(7, 1), (7, 9)]],
+                                           [True, [(7, 18), (7, 10)]],
+                                           [True, [(17, 12), (11, 12), (11, 7), (17, 7)]]],
                           'enemy_image': load_image('city_map\Axeman.png'),
                           'enemy_size': (6, 6),
-                          'points': {242: 50, 239: 5},
+                          'points': {241: 50, 238: 5},
                           'countdown': 120}}
 
 
@@ -883,8 +885,8 @@ def start_game(name_level): # функция игрового процесса
     global number_of_cells, screen_rect, number_of_lives, vol, flPause, final_points
     global all_sprites, player_group, enemy_group, collectible_group, asterisks, countdown
 
-    number_of_lives = 3 # количество жизней
-    final_points = 0 # кол-во окончательных очков
+    number_of_lives = 3  # количество жизней
+    final_points = 0  # кол-во окончательных очков
 
     all_sprites = pygame.sprite.Group()
     player_group = pygame.sprite.Group()
