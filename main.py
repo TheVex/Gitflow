@@ -15,6 +15,8 @@ GRAVITY = 0.5
 ENEMY_EVENT_TYPE = pygame.USEREVENT + 1
 COUNTDOWN_EVENT_TYPE = pygame.USEREVENT + 2
 UPDATE_ANIMATION_TYPE = pygame.USEREVENT + 3
+INF = 1000
+number_of_lives = 3
 
 fullname1 = os.path.join('data', 'музыка1.mp3')  # открытие файла с фоновой музыкой
 pygame.mixer.music.load(fullname1)  # подключение фоновой музыки
@@ -24,6 +26,9 @@ pygame.mixer.music.play(-1)
 vol = 0.5  # громкость музыки
 pygame.mixer.music.set_volume(vol)
 flPause = False  # флаг включена/выключена музыка
+current_level = None
+screen_rect = None
+final_points = None
 
 
 def load_image(name, colorkey=None):  # Функция для загрузки картинок
@@ -67,11 +72,11 @@ def terminate():  # Завершает работу
 
 
 def show_menu():  # окно меню
-    global menu_bckgr, flPause, vol
-    fullname = os.path.join('Общие картинки', 'Фон1.jpg')  # подключение фона
-    fullname = os.path.join('Картинки', fullname)
-    fullname = os.path.join('data', fullname)
-    menu_bckgr = pygame.image.load(fullname)
+    global flPause, vol
+    full_name = os.path.join('Общие картинки', 'Фон1.jpg')  # подключение фона
+    full_name = os.path.join('Картинки', full_name)
+    full_name = os.path.join('data', full_name)
+    menu_bckgr = pygame.image.load(full_name)
 
     play_game_button = Button(250, 60, (190, 233, 221), (180, 255, 235))  # создание кнопок
     records_button = Button(250, 60, (190, 233, 221), (180, 255, 235))
@@ -135,55 +140,55 @@ def show_menu():  # окно меню
 
 def play():  # окно для выбора уровня
     global menu_bckgr, flPause, vol
-    fullname = os.path.join('Общие картинки', 'Фон1.jpg')  # подключение фона
-    fullname = os.path.join('Картинки', fullname)
-    fullname = os.path.join('data', fullname)
-    menu_bckgr = pygame.image.load(fullname)
+    full_name = os.path.join('Общие картинки', 'Фон1.jpg')  # подключение фона
+    full_name = os.path.join('Картинки', full_name)
+    full_name = os.path.join('data', full_name)
+    menu_bckgr = pygame.image.load(full_name)
 
     menu_button = Button(50, 45, (190, 233, 221), (180, 255, 235))
     start_button = Button(200, 200, (190, 233, 221), (180, 255, 235))  # создание кнопок уровней
 
     all_sprites_button = pygame.sprite.Group()
 
-    fullname = os.path.join('Пустыня', 'Верблюд.png')  # открытие картинок, находящихся на кнопках
-    fullname = os.path.join('Картинки', fullname)
-    sprite = pygame.sprite.Sprite()
-    image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (150, 150))
-    sprite.rect = sprite.image.get_rect()
-    all_sprites_button.add(sprite)
-    sprite.rect.x = 85
-    sprite.rect.y = 170
+    full_name = os.path.join('Пустыня', 'Верблюд.png')  # открытие картинок, находящихся на кнопках
+    full_name = os.path.join('Картинки', full_name)
+    sprite_file = pygame.sprite.Sprite()
+    image_file = load_image(full_name)
+    sprite_file.image = pygame.transform.scale(image_file, (150, 150))
+    sprite_file.rect = sprite_file.image.get_rect()
+    all_sprites_button.add(sprite_file)
+    sprite_file.rect.x = 85
+    sprite_file.rect.y = 170
 
-    fullname = os.path.join('Джунгли', 'пугало.png')  # открытие картинок, находящихся на кнопках
-    fullname = os.path.join('Картинки', fullname)
-    sprite = pygame.sprite.Sprite()
-    image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (150, 150))
-    sprite.rect = sprite.image.get_rect()
-    all_sprites_button.add(sprite)
-    sprite.rect.x = 400
-    sprite.rect.y = 170
+    full_name = os.path.join('Джунгли', 'пугало.png')  # открытие картинок, находящихся на кнопках
+    full_name = os.path.join('Картинки', full_name)
+    sprite_file = pygame.sprite.Sprite()
+    image_file = load_image(full_name)
+    sprite_file.image = pygame.transform.scale(image_file, (150, 150))
+    sprite_file.rect = sprite_file.image.get_rect()
+    all_sprites_button.add(sprite_file)
+    sprite_file.rect.x = 400
+    sprite_file.rect.y = 170
 
-    fullname = os.path.join('Зима', 'Снеговик1.jpg')
-    fullname = os.path.join('Картинки', fullname)
-    sprite = pygame.sprite.Sprite()
-    image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (140, 140))
-    sprite.rect = sprite.image.get_rect()
-    all_sprites_button.add(sprite)
-    sprite.rect.x = 100
-    sprite.rect.y = 420
+    full_name = os.path.join('Зима', 'Снеговик1.jpg')
+    full_name = os.path.join('Картинки', full_name)
+    sprite_file = pygame.sprite.Sprite()
+    image_file = load_image(full_name)
+    sprite_file.image = pygame.transform.scale(image_file, (140, 140))
+    sprite_file.rect = sprite_file.image.get_rect()
+    all_sprites_button.add(sprite_file)
+    sprite_file.rect.x = 100
+    sprite_file.rect.y = 420
 
-    fullname = os.path.join('Общие картинки', 'вопрос.png')
-    fullname = os.path.join('Картинки', fullname)
-    sprite = pygame.sprite.Sprite()
-    image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (140, 140))
-    sprite.rect = sprite.image.get_rect()
-    all_sprites_button.add(sprite)
-    sprite.rect.x = 415
-    sprite.rect.y = 420
+    full_name = os.path.join('Общие картинки', 'вопрос.png')
+    full_name = os.path.join('Картинки', full_name)
+    sprite_file = pygame.sprite.Sprite()
+    image_file = load_image(full_name)
+    sprite_file.image = pygame.transform.scale(image_file, (140, 140))
+    sprite_file.rect = sprite_file.image.get_rect()
+    all_sprites_button.add(sprite_file)
+    sprite_file.rect.x = 415
+    sprite_file.rect.y = 420
 
     show = True
     while show:
@@ -276,7 +281,7 @@ class Level:  # Класс игрового поля
 
         self.collectible_list = {}
         for y in range(
-                self.height):  # Проверяет, является ли клетка доступной для сбора и добавляет в список предметов для сбора
+                self.height):  # Проверяет, доступна ли клетка для сбора и добавляет в список предметов для сбора
             for x in range(self.width):
                 pos_tile = self.get_tile_id((x, y))
                 if pos_tile in self.collectible_tiles.keys():
@@ -300,7 +305,6 @@ class Level:  # Класс игрового поля
                     pass
 
     def find_path_step(self, start, target):  # Функция ИИ у противников
-        INF = 1000
         x, y = start
         distance = [[INF] * self.width for _ in range(self.height)]
         distance[y][x] = 0
@@ -436,7 +440,6 @@ class Game:  # Класс, объединяющий уровень, против
             next_x += 1
         elif pygame.key.get_pressed()[pygame.K_DOWN]:
             next_y += 1
-        print(self.level.get_tile_id((next_x, next_y))) # ВАНЯ если ненужно, то убери
         if self.level.is_free((next_x, next_y)):  # проверка, может ли игрок наступить на плитку
             self.player.set_pos((next_x, next_y))
 
@@ -470,7 +473,6 @@ class Game:  # Класс, объединяющий уровень, против
 
     def decrease_live(self):
         global number_of_lives
-        print(number_of_lives) # ВАНЯ если ненужно, то убери
         number_of_lives -= 1
         if number_of_lives < 1:
             game_over()
@@ -511,8 +513,7 @@ class Button:  # создания кнопок
     def draw(self, x, y, message, action=None, font_size=30):  # порисовка кнопок
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
-        if x < mouse[0] < x + self.width_button and y < mouse[
-            1] < y + self.height_button:  # проверка местонахождения курсора
+        if x < mouse[0] < x + self.width_button and y < mouse[1] < y + self.height_button:  # проверка положения курсора
             pygame.draw.rect(screen, self.active_color, (x, y, self.width_button, self.height_button))
 
             if click[0] == 1:  # нажатие на кнопку
@@ -525,6 +526,7 @@ class Button:  # создания кнопок
 
         print_text(message=message, x=x + 10, y=y + 10, font_size=font_size)
 
+
 def record():
     global flPause, vol
     menu_button = Button(50, 45, (190, 233, 221), (180, 255, 235))  # создание кнопки вернуться в меню
@@ -533,7 +535,7 @@ def record():
     result = cur.execute("""SELECT * FROM glasses""").fetchall()
     con.close()
     winter, village, desert = result[0][1], result[1][1], result[2][1]
-    print(result)
+    # print(result) ДАША, я оставил не случай если нужно
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -558,7 +560,7 @@ def record():
         screen.blit(text_game, text_rect)
         pygame.draw.rect(screen, (180, 255, 235), (70, 130, 500, 2), 0)
 
-        pygame.draw.rect(screen, (180, 255, 235), (150, 300, 340, 2), 0) # прорисовка тпблицы рекордов
+        pygame.draw.rect(screen, (180, 255, 235), (150, 300, 340, 2), 0)  # прорисовка тпблицы рекордов
         pygame.draw.rect(screen, (180, 255, 235), (150, 350, 340, 2), 0)
         pygame.draw.rect(screen, (180, 255, 235), (150, 400, 340, 2), 0)
         pygame.draw.rect(screen, (180, 255, 235), (150, 450, 340, 2), 0)
@@ -600,8 +602,6 @@ def record():
         pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
         all_sprites_menu.draw(screen)
         pygame.display.flip()
-
-
 
 
 def rule_window():  # окно с правилами игры
@@ -651,36 +651,36 @@ def win_window():  # окно победы
     replay_button = Button(120, 65, (190, 233, 221), (180, 255, 235))  # создание кнопок переиграть и вернуться в меню
     menu_button = Button(120, 65, (190, 233, 221), (180, 255, 235))
     all_sprites_game_over = pygame.sprite.Group()
-    fullname = os.path.join('Общие картинки', 'Меню71.png')
-    fullname = os.path.join('Картинки', fullname)
-    sprite = pygame.sprite.Sprite()
-    image = load_image(fullname, -1)
-    sprite.image = pygame.transform.scale(image, (90, 70))
-    sprite.rect = sprite.image.get_rect()
-    all_sprites_game_over.add(sprite)
-    sprite.rect.x = 193
-    sprite.rect.y = 445
+    full_name = os.path.join('Общие картинки', 'Меню71.png')
+    full_name = os.path.join('Картинки', full_name)
+    sprite_file = pygame.sprite.Sprite()
+    image_file = load_image(full_name, -1)
+    sprite_file.image = pygame.transform.scale(image_file, (90, 70))
+    sprite_file.rect = sprite_file.image.get_rect()
+    all_sprites_game_over.add(sprite_file)
+    sprite_file.rect.x = 193
+    sprite_file.rect.y = 445
 
     all_sprites_emerald = pygame.sprite.Group()
-    fullname = os.path.join('Общие картинки', 'Emerald.png')
-    fullname = os.path.join('Картинки', fullname)
-    sprite = pygame.sprite.Sprite()
-    image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (35, 35))
-    sprite.rect = sprite.image.get_rect()
-    all_sprites_emerald.add(sprite)
-    sprite.rect.x = 260
-    sprite.rect.y = 395
+    full_name = os.path.join('Общие картинки', 'Emerald.png')
+    full_name = os.path.join('Картинки', full_name)
+    sprite_file = pygame.sprite.Sprite()
+    image_file = load_image(full_name)
+    sprite_file.image = pygame.transform.scale(image_file, (35, 35))
+    sprite_file.rect = sprite_file.image.get_rect()
+    all_sprites_emerald.add(sprite_file)
+    sprite_file.rect.x = 260
+    sprite_file.rect.y = 395
 
-    fullname = os.path.join('Общие картинки', 'переиграть3.png')
-    fullname = os.path.join('Картинки', fullname)
-    sprite = pygame.sprite.Sprite()
-    image = load_image(fullname, -1)
-    sprite.image = pygame.transform.scale(image, (140, 60))
-    sprite.rect = sprite.image.get_rect()
-    all_sprites_game_over.add(sprite)
-    sprite.rect.x = 340
-    sprite.rect.y = 450
+    full_name = os.path.join('Общие картинки', 'переиграть3.png')
+    full_name = os.path.join('Картинки', full_name)
+    sprite_file = pygame.sprite.Sprite()
+    image_file = load_image(full_name, -1)
+    sprite_file.image = pygame.transform.scale(image_file, (140, 60))
+    sprite_file.rect = sprite_file.image.get_rect()
+    all_sprites_game_over.add(sprite_file)
+    sprite_file.rect.x = 340
+    sprite_file.rect.y = 450
 
     con = sqlite3.connect("results.sqlite")  # подключение бд
     cur = con.cursor()
@@ -688,7 +688,7 @@ def win_window():  # окно победы
                     WHERE name = ?""", (current_level,)).fetchall()
     if final_points > result[0][1]:
         cur.execute("""UPDATE glasses SET number = ?
-                         WHERE name = ? """, (final_points,current_level)).fetchall()
+                         WHERE name = ? """, (final_points, current_level)).fetchall()
         con.commit()
     con.close()
 
@@ -744,25 +744,25 @@ def game_over():  # окно проигрыша
     menu_button = Button(120, 65, (190, 233, 221), (180, 255, 235))
     number_of_lives -= 1  # уменьшение кол-ва жизней
     all_sprites_game_over = pygame.sprite.Group()
-    fullname = os.path.join('Общие картинки', 'Меню71.png')
-    fullname = os.path.join('Картинки', fullname)
-    sprite = pygame.sprite.Sprite()
-    image = load_image(fullname, -1)
-    sprite.image = pygame.transform.scale(image, (90, 70))
-    sprite.rect = sprite.image.get_rect()
-    all_sprites_game_over.add(sprite)
-    sprite.rect.x = 193
-    sprite.rect.y = 395
+    full_name = os.path.join('Общие картинки', 'Меню71.png')
+    full_name = os.path.join('Картинки', full_name)
+    sprite_file = pygame.sprite.Sprite()
+    image_file = load_image(full_name, -1)
+    sprite_file.image = pygame.transform.scale(image_file, (90, 70))
+    sprite_file.rect = sprite_file.image.get_rect()
+    all_sprites_game_over.add(sprite_file)
+    sprite_file.rect.x = 193
+    sprite_file.rect.y = 395
 
-    fullname = os.path.join('Общие картинки', 'переиграть3.png')
-    fullname = os.path.join('Картинки', fullname)
-    sprite = pygame.sprite.Sprite()
-    image = load_image(fullname, -1)
-    sprite.image = pygame.transform.scale(image, (140, 60))
-    sprite.rect = sprite.image.get_rect()
-    all_sprites_game_over.add(sprite)
-    sprite.rect.x = 340
-    sprite.rect.y = 400
+    full_name = os.path.join('Общие картинки', 'переиграть3.png')
+    full_name = os.path.join('Картинки', full_name)
+    sprite_file = pygame.sprite.Sprite()
+    image_file = load_image(full_name, -1)
+    sprite_file.image = pygame.transform.scale(image_file, (140, 60))
+    sprite_file.rect = sprite_file.image.get_rect()
+    all_sprites_game_over.add(sprite_file)
+    sprite_file.rect.x = 340
+    sprite_file.rect.y = 400
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -823,7 +823,6 @@ def start_level_winter():  # функция level_winter
 
 def start_level_random():  # функция level_random
     global current_level
-    number_of_lives = 3
     random_level = ['winter_map', 'city_map', 'desert_map']
     current_level = random.choice(random_level)
     start_game(current_level)
@@ -841,7 +840,7 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
                                              [False, [(1, 1)]],
                                              [False, [(18, 1)]]],
                             # Список координат появления противников
-                            'enemy_image': load_image('winter_map\Yeti.png'),  # Картинка противника
+                            'enemy_image': load_image('winter_map/Yeti.png'),  # Картинка противника
                             'enemy_size': (6, 8),
                             'points': {61: 5, 62: 50},
                             # Количество очков, получаемых при сборе предмета (в виде "ID_предмета: кол_очков")
@@ -858,7 +857,7 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
                                              [True, [(14, 12), (14, 17), (11, 17), (11, 12)]],
                                              [False, [(4, 18)]],
                                              [False, [(15, 18)]]],
-                            'enemy_image': load_image('desert_map\Shaman.png'),
+                            'enemy_image': load_image('desert_map/Shaman.png'),
                             'enemy_size': (6, 8),
                             'points': {377: 50, 376: 5},
                             'countdown': 120},
@@ -875,14 +874,14 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
                                            [True, [(7, 1), (7, 9)]],
                                            [True, [(7, 18), (7, 10)]],
                                            [True, [(17, 12), (11, 12), (11, 7), (17, 7)]]],
-                          'enemy_image': load_image('city_map\Axeman.png'),
+                          'enemy_image': load_image('city_map/Axeman.png'),
                           'enemy_size': (6, 6),
                           'points': {241: 50, 238: 5},
                           'countdown': 120}}
 
 
-def start_game(name_level): # функция игрового процесса
-    global number_of_cells, screen_rect, number_of_lives, vol, flPause, final_points
+def start_game(name_level):  # функция игрового процесса
+    global screen_rect, number_of_lives, vol, flPause, final_points
     global all_sprites, player_group, enemy_group, collectible_group, asterisks, countdown
 
     number_of_lives = 3  # количество жизней
@@ -905,48 +904,48 @@ def start_game(name_level): # функция игрового процесса
 
     menu_button = Button(50, 45, (190, 233, 221), (180, 255, 235))
 
-    fullname = os.path.join('Общие картинки', 'Жизнь.png')
-    fullname = os.path.join('Картинки', fullname)
+    full_name = os.path.join('Общие картинки', 'Жизнь.png')
+    full_name = os.path.join('Картинки', full_name)
 
     all_sprites_life1 = pygame.sprite.Group()
-    sprite = pygame.sprite.Sprite()
-    image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (40, 40))
-    sprite.rect = sprite.image.get_rect()
-    all_sprites_life1.add(sprite)
-    sprite.rect.x = 370
-    sprite.rect.y = 645
+    sprite_file = pygame.sprite.Sprite()
+    image_file = load_image(full_name)
+    sprite_file.image = pygame.transform.scale(image_file, (40, 40))
+    sprite_file.rect = sprite_file.image.get_rect()
+    all_sprites_life1.add(sprite_file)
+    sprite_file.rect.x = 370
+    sprite_file.rect.y = 645
 
     all_sprites_life2 = pygame.sprite.Group()
-    sprite = pygame.sprite.Sprite()
-    image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (40, 40))
-    sprite.rect = sprite.image.get_rect()
-    all_sprites_life2.add(sprite)
-    sprite.rect.x = 325
-    sprite.rect.y = 645
+    sprite_file = pygame.sprite.Sprite()
+    image_file = load_image(full_name)
+    sprite_file.image = pygame.transform.scale(image_file, (40, 40))
+    sprite_file.rect = sprite_file.image.get_rect()
+    all_sprites_life2.add(sprite_file)
+    sprite_file.rect.x = 325
+    sprite_file.rect.y = 645
 
     all_sprites_life3 = pygame.sprite.Group()
-    sprite = pygame.sprite.Sprite()
-    image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (40, 40))
-    sprite.rect = sprite.image.get_rect()
-    all_sprites_life3.add(sprite)
-    sprite.rect.x = 280
-    sprite.rect.y = 645
+    sprite_file = pygame.sprite.Sprite()
+    image_file = load_image(full_name)
+    sprite_file.image = pygame.transform.scale(image_file, (40, 40))
+    sprite_file.rect = sprite_file.image.get_rect()
+    all_sprites_life3.add(sprite_file)
+    sprite_file.rect.x = 280
+    sprite_file.rect.y = 645
 
     all_sprites_play = pygame.sprite.Group()
 
-    fullname = os.path.join('Общие картинки', 'Emerald.png')
-    fullname = os.path.join('Картинки', fullname)
+    full_name = os.path.join('Общие картинки', 'Emerald.png')
+    full_name = os.path.join('Картинки', full_name)
 
-    sprite = pygame.sprite.Sprite()
-    image = load_image(fullname)
-    sprite.image = pygame.transform.scale(image, (25, 25))
-    sprite.rect = sprite.image.get_rect()
-    all_sprites_play.add(sprite)
-    sprite.rect.x = 530
-    sprite.rect.y = 655
+    sprite_file = pygame.sprite.Sprite()
+    image_file = load_image(full_name)
+    sprite_file.image = pygame.transform.scale(image_file, (25, 25))
+    sprite_file.rect = sprite_file.image.get_rect()
+    all_sprites_play.add(sprite_file)
+    sprite_file.rect.x = 530
+    sprite_file.rect.y = 655
 
     screen_rect = (0, 0, width, height)
 
@@ -991,7 +990,7 @@ def start_game(name_level): # функция игрового процесса
         asterisks.update()
         asterisks.draw(screen)
 
-        if number_of_lives == 3: # происовка жизней
+        if number_of_lives == 3:  # происовка жизней
             all_sprites_life1.draw(screen)
             all_sprites_life2.draw(screen)
             all_sprites_life3.draw(screen)
@@ -1001,7 +1000,7 @@ def start_game(name_level): # функция игрового процесса
         else:
             all_sprites_life1.draw(screen)
 
-        menu_button.draw(10, 645, '', show_menu, 40) # прорисовка времени
+        menu_button.draw(10, 645, '', show_menu, 40)  # прорисовка времени
         pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
         time_play = time.strftime("%M:%S", time.gmtime(countdown))
         font = pygame.font.Font(None, 50)
@@ -1009,7 +1008,7 @@ def start_game(name_level): # функция игрового процесса
         text_rect = text.get_rect(center=(470, 670))
         screen.blit(text, text_rect)
 
-        font = pygame.font.Font(None, 50) # прорисовка кол-ва очков
+        font = pygame.font.Font(None, 50)  # прорисовка кол-ва очков
         text = font.render(str(game.level.points), True, (0, 0, 0))
         screen.blit(text, (560, 652))
 
