@@ -123,7 +123,7 @@ def terminate():  # Завершает работу
 
 
 def show_menu():  # окно меню
-    global flPause, vol
+    global flPause, vol, menu_bckgr
     full_name = os.path.join('Общие картинки', 'Фон1.jpg')  # подключение фона
     full_name = os.path.join('Картинки', full_name)
     full_name = os.path.join('data', full_name)
@@ -581,12 +581,8 @@ class Button:  # создания кнопок
 def record():
     global flPause, vol
     menu_button = Button(50, 45, (190, 233, 221), (180, 255, 235))  # создание кнопки вернуться в меню
-    con = sqlite3.connect("results.sqlite")  # подключение бд
-    cur = con.cursor()
-    result = cur.execute("""SELECT * FROM glasses""").fetchall()
-    con.close()
-    winter, village, desert = result[0][1], result[1][1], result[2][1]
-    # print(result) ДАША, я оставил не случай если нужно
+    record_button = Button(115, 45, (190, 233, 221), (180, 255, 235))  # создание кнопки обнулить рекорды
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -604,6 +600,13 @@ def record():
                 elif event.key == pygame.K_d:
                     vol += 0.1
                     pygame.mixer.music.set_volume(vol)
+
+        con = sqlite3.connect("results.sqlite")  # подключение бд
+        cur = con.cursor()
+        result = cur.execute("""SELECT * FROM glasses""").fetchall()
+        con.close()
+        winter, village, desert = result[0][1], result[1][1], result[2][1]
+
         screen.blit(menu_bckgr, (0, 0))
         font = pygame.font.Font(None, 70)  # Надпись 'Лучшие результаты'
         text_game = font.render('Лучшие результаты', True, (16, 17, 18))
@@ -652,6 +655,10 @@ def record():
         menu_button.draw(10, 645, '', show_menu, 40)
         pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
         all_sprites_menu.draw(screen)
+
+        record_button.draw(70, 645, 'update', reset_database, 30)
+        pygame.draw.rect(screen, (180, 255, 235), (69, 644, 117, 47), 3)
+        all_sprites_menu.draw(screen)
         pygame.display.flip()
 
 
@@ -695,6 +702,21 @@ def rule_window():  # окно с правилами игры
         pygame.draw.rect(screen, (180, 255, 235), (9, 644, 52, 47), 3)
         all_sprites_menu.draw(screen)
         pygame.display.flip()
+
+
+def reset_database():  # обнуление бд
+    con = sqlite3.connect("results.sqlite")  # подключение бд
+    cur = con.cursor()
+
+    result = cur.execute("""SELECT * FROM glasses""").fetchall()
+    cur.execute("""UPDATE glasses SET number = 0
+                        WHERE name = 'desert_map'""").fetchall()
+    cur.execute("""UPDATE glasses SET number = 0
+                            WHERE name = 'city_map'""").fetchall()
+    cur.execute("""UPDATE glasses SET number = 0
+                            WHERE name = 'winter_map'""").fetchall()
+    con.commit()
+    con.close()
 
 
 def win_window():  # окно победы
