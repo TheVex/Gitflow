@@ -380,7 +380,7 @@ class Level:  # Класс игрового поля
     def get_tile_id(self, position):  # Возвращает ID клетки (узнать чем эта клетка является)
         try:
             return self.tile_map.tiledgidmap[self.tile_map.get_tile_gid(*position, 1)]
-        except KeyError:
+        except (KeyError, ValueError):
             return 0
 
     def is_free(self, position, enemy=False):  # Проверяет, свободна ли клетка
@@ -493,6 +493,11 @@ class Game:  # Класс, объединяющий уровень, против
             next_y += 1
         if self.level.is_free((next_x, next_y)):  # проверка, может ли игрок наступить на плитку
             self.player.set_pos((next_x, next_y))
+            self.check_on_bug()
+
+    def check_on_bug(self):
+        if self.player.pos_x < 0 or self.player.pos_y < 0 or self.player.pos_x > 20 or self.player.pos_y > 20:
+            self.decrease_live()
 
     def check_collide(self):
         if pygame.sprite.spritecollideany(self.player, enemy_group):
