@@ -47,9 +47,9 @@ def load_image(name, colorkey=None):  # Функция для загрузки �
     return im
 
 
-#    - это словарь который присоединяет все объекты в игре к своим уровням
+# Cловарь который присоединяет все объекты в игре к своим уровням
 GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игрока
-                            'free_tiles': [27, 30, 61, 62, 44],  # Свободные плитки
+                            'free_tiles': [27, 30, 59, 60, 44],  # Свободные плитки
                             'win_tile': 44,  # Победная плитка
                             'death_tiles': [],  # Смертельные плитки
                             'enemies_list': [[True, [(12, 15), (12, 17), (17, 15), (17, 17)]],
@@ -57,14 +57,13 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
                                              [True, [(13, 9), (13, 7), (18, 7), (18, 9)]],
                                              [True, [(6, 9), (6, 7), (1, 7), (1, 9)]],
                                              [False, [(1, 1)]],
-                                             [False, [(18, 1)]]],
-                            # Список координат появления противников
+                                             [False, [(18, 1)]]],  # Список координат появления противников
                             'enemy_image': load_image('winter_map/Yeti.png'),  # Картинка противника
-                            'enemy_size': (6, 8),
-                            'points': {61: 5, 62: 50},
+                            'enemy_size': (6, 8),  # Количество кадров противника по горизонтали и вертикали
+                            'points': {59: 5, 60: 50},
                             # Количество очков, получаемых при сборе предмета (в виде "ID_предмета: кол_очков")
                             'countdown': 120},  # Таймер, в секундах
-             # Количество картинок внутри картинки противника по горизонтали и вертикали
+
 
              'desert_map': {'player': (9, 1),
                             'free_tiles': [19, 43, 20, 0, 42, 4, 163, 376, 377],
@@ -82,7 +81,7 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
                             'countdown': 120},
 
              'city_map': {'player': (1, 9),
-                          'free_tiles': [0, 238, 241, 177, 179, 142, 9],  #
+                          'free_tiles': [0, 232, 235, 241, 177, 179, 142, 9],
                           'win_tile': 9,
                           'death_tiles': [142],
                           'enemies_list': [[True, [(11, 7), (17, 7), (17, 12), (11, 12)]],
@@ -95,7 +94,7 @@ GAME_BASE = {'winter_map': {'player': (10, 16),  # Координаты игро
                                            [True, [(17, 12), (11, 12), (11, 7), (17, 7)]]],
                           'enemy_image': load_image('city_map/Axeman.png'),
                           'enemy_size': (6, 6),
-                          'points': {241: 50, 238: 5},
+                          'points': {235: 50, 232: 5},
                           'countdown': 120}}
 
 fullname = os.path.join('Общие картинки', 'Меню71.png')  # картинка находящаяся на кнопке выхода в меню
@@ -331,8 +330,7 @@ class Level:  # Класс игрового поля
         self.points = 0
 
         self.collectible_list = {}
-        for y in range(
-                self.height):  # Проверяет, доступна ли клетка для сбора и добавляет в список предметов для сбора
+        for y in range(self.height):  # Проверяет, доступна ли клетка для сбора и добавляет в список предметов для сбора
             for x in range(self.width):
                 pos_tile = self.get_tile_id((x, y))
                 if pos_tile in self.collectible_tiles.keys():
@@ -388,14 +386,14 @@ class Level:  # Класс игрового поля
             return self.get_tile_id(position) in self.free_tiles and self.get_tile_id(position) not in self.death_tiles
         return self.get_tile_id(position) in self.free_tiles
 
-    def collect(self, pos):
+    def collect(self, pos):  # Добавление очков за предмет и удаление этого предмета с экрана
         global points
         item = self.collectible_list[pos]
         self.points += item.points
         del self.collectible_list[pos]
 
 
-class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
+class Player(pygame.sprite.Sprite):  # Класс игрока
     def __init__(self, pos, image):
         super(Player, self).__init__(player_group, all_sprites)
         self.pos_x, self.pos_y = pos
@@ -408,12 +406,12 @@ class Player(pygame.sprite.Sprite):  # КЛАСС ПЕРСОНАЖА
     def set_pos(self, pos):  # Устанавливает координаты игрока
         self.pos_x, self.pos_y = pos
 
-    def render(self, level):  # Ставит игрока на поле. Вызывается каждый кадр
+    def render(self, level):  # Ставит игрока на поле
         self.rect = self.image.get_rect().move(level.tile_size * self.pos_x,
                                                level.tile_size * self.pos_y)
 
 
-class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
+class Enemy(pygame.sprite.Sprite):  # Класс противника
     def __init__(self, pos, level, sheet,
                  size, patrol=False):  # принимает в себя картинку, состоящую из нескольких картинок для анимации
         super(Enemy, self).__init__(enemy_group, all_sprites)  # и размер, который будет взят для анимирования
@@ -422,7 +420,7 @@ class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
         self.pos = pos
         self.level = level
 
-        self.patrol = patrol
+        self.patrol = patrol  # Определяет тип противника. False: преследует игрока. True: идёт по заданному пути
         if self.patrol:
             self.patrol_coord = self.pos[0]
 
@@ -442,7 +440,7 @@ class Enemy(pygame.sprite.Sprite):  # КЛАСС ПРОТИВНИКА
                 self.frames.append(sheet.subsurface(pygame.Rect(
                     frame_location, self.rect.size)))
 
-    def render(self):  # Ставит противника на поле. Вызывается каждый кадр
+    def render(self):  # Ставит противника на поле
         self.rect = self.image.get_rect().move(self.level.tile_size * self.pos_x,
                                                self.level.tile_size * self.pos_y)
 
@@ -495,11 +493,11 @@ class Game:  # Класс, объединяющий уровень, против
             self.player.set_pos((next_x, next_y))
             self.check_on_bug()
 
-    def check_on_bug(self):
+    def check_on_bug(self):  # Убирает жизнь если игрок выйдет за пределы экрана
         if self.player.pos_x < 0 or self.player.pos_y < 0 or self.player.pos_x > 20 or self.player.pos_y > 20:
             self.decrease_live()
 
-    def check_collide(self):
+    def check_collide(self):  # Проверяет столкновение игрока с противником
         if pygame.sprite.spritecollideany(self.player, enemy_group):
             self.decrease_live()
 
@@ -508,12 +506,12 @@ class Game:  # Класс, объединяющий уровень, против
                 self.player.get_pos()) == self.level.finish_tile:  # Реакция в случае попадания на победную плитку
             win_window()
         elif self.level.get_tile_id(self.player.get_pos()) in self.level.collectible_tiles.keys() and \
-                self.player.get_pos() in self.level.collectible_list.keys():
+                self.player.get_pos() in self.level.collectible_list.keys():  # В случае попадания на клетку с предметом
             self.level.collect(self.player.get_pos())
         elif self.level.get_tile_id(self.player.get_pos()) in self.level.death_tiles:
-            self.decrease_live()
+            self.decrease_live()  # В случае попадания на смертельную плитку
 
-    def move_enemy(self, enemy):  # Отвечает за перемещение противника-преследователя
+    def move_enemy(self, enemy):  # Отвечает за перемещение противника
         if enemy.patrol:
             next_position = self.level.find_path_step(enemy.get_pos(), enemy.patrol_coord)
             if next_position == enemy.get_pos():
@@ -527,7 +525,7 @@ class Game:  # Класс, объединяющий уровень, против
                     return
             enemy.pos_x, enemy.pos_y = next_position
 
-    def decrease_live(self):
+    def decrease_live(self):  # Уменьшает количество жизней
         global number_of_lives
         number_of_lives -= 1
         if number_of_lives < 1:
@@ -632,12 +630,12 @@ def record():
         text_rect = text_game.get_rect(center=(250, 325))
         screen.blit(text_game, text_rect)
 
-        font = pygame.font.Font(None, 35)  # Надпись 'level "Desert"'
+        font = pygame.font.Font(None, 35)  # Надпись 'level "Village"'
         text_game = font.render('level "Village"', True, (16, 17, 18))
         text_rect = text_game.get_rect(center=(250, 375))
         screen.blit(text_game, text_rect)
 
-        font = pygame.font.Font(None, 35)  # Надпись 'level "Desert"'
+        font = pygame.font.Font(None, 35)  # Надпись 'level "Winter"'
         text_game = font.render('level "Winter"', True, (16, 17, 18))
         text_rect = text_game.get_rect(center=(250, 425))
         screen.blit(text_game, text_rect)
@@ -713,7 +711,7 @@ def reset_database():  # обнуление бд
     con = sqlite3.connect("results.sqlite")  # подключение бд
     cur = con.cursor()
 
-    result = cur.execute("""SELECT * FROM glasses""").fetchall()
+    cur.execute("""SELECT * FROM glasses""").fetchall()
     cur.execute("""UPDATE glasses SET number = 0
                         WHERE name = 'desert_map'""").fetchall()
     cur.execute("""UPDATE glasses SET number = 0
@@ -881,25 +879,25 @@ def replay_the_level():  # функция "переиграть"
     start_game(current_level)
 
 
-def start_level_desert():  # функция level_desert
+def start_level_desert():  # Запуск уровня 'Desert'
     global current_level
     current_level = 'desert_map'
     start_game('desert_map')
 
 
-def start_level_city():  # функция level_city
+def start_level_city():  # Запуск уровня 'Village'
     global current_level
     current_level = 'city_map'
     start_game('city_map')
 
 
-def start_level_winter():  # функция level_winter
+def start_level_winter():  # Запуск уровня 'Winter'
     global current_level
     current_level = 'winter_map'
     start_game('winter_map')
 
 
-def start_level_random():  # функция level_random
+def start_level_random():  # Запуск случайного уровня
     global current_level
     random_level = ['winter_map', 'city_map', 'desert_map']
     current_level = random.choice(random_level)
@@ -983,10 +981,10 @@ def start_game(name_level):  # функция игрового процесса
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            if event.type == ENEMY_EVENT_TYPE:
+            if event.type == ENEMY_EVENT_TYPE:  # Передвижение противника
                 for i in game.enemy_list:
                     game.move_enemy(i)
-            if event.type == UPDATE_ANIMATION_TYPE:
+            if event.type == UPDATE_ANIMATION_TYPE:  # Обновление анимации противников
                 for i in game.enemy_list:
                     i.update_frame()
             if event.type == COUNTDOWN_EVENT_TYPE:  # счётчик времени
